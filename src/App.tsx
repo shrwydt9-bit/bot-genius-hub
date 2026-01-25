@@ -8,6 +8,7 @@ import Platforms from "./pages/Platforms";
 import Customize from "./pages/Customize";
 import Storefront from "./pages/Storefront";
 import ProductDetail from "./pages/ProductDetail";
+ import ResponseTemplates from "./pages/ResponseTemplates";
 import NotFound from "./pages/NotFound";
 import { useCartSync } from "./hooks/useCartSync";
 
@@ -22,6 +23,7 @@ const AppContent = () => {
       <Route path="/customize" element={<Customize />} />
       <Route path="/storefront" element={<Storefront />} />
       <Route path="/product/:handle" element={<ProductDetail />} />
+     <Route path="/templates" element={<ResponseTemplates />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>

@@ -307,6 +307,62 @@ export type Database = {
         }
         Relationships: []
       }
+      response_templates: {
+        Row: {
+          bot_id: string | null
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          platform: Database["public"]["Enums"]["bot_platform"]
+          template_content: string
+          updated_at: string | null
+          usage_count: number | null
+          user_id: string
+          variables: Json | null
+        }
+        Insert: {
+          bot_id?: string | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          platform: Database["public"]["Enums"]["bot_platform"]
+          template_content: string
+          updated_at?: string | null
+          usage_count?: number | null
+          user_id: string
+          variables?: Json | null
+        }
+        Update: {
+          bot_id?: string | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          platform?: Database["public"]["Enums"]["bot_platform"]
+          template_content?: string
+          updated_at?: string | null
+          usage_count?: number | null
+          user_id?: string
+          variables?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "response_templates_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "bots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       webhook_logs: {
         Row: {
           created_at: string
