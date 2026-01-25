@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { MessageCircle, Send, Instagram, Facebook, ShoppingBag, Slack, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const platformsData = [
   {
