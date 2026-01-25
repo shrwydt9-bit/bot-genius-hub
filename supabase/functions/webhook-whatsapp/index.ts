@@ -1,5 +1,6 @@
  import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createOpenRouterClient, chatCompletion } from "../_shared/openrouter.ts";
  
  const corsHeaders = {
    "Access-Control-Allow-Origin": "*",
@@ -111,25 +112,18 @@
           botReply = ecommerceData.reply || "I'm sorry, I couldn't process that.";
         } else {
           // Use standard AI chat for non-ecommerce bots
-          const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+          const apiKey = await createOpenRouterClient();
           const systemPrompt = `You are a ${deployment.bots.personality || "friendly"} chatbot. ${deployment.bots.description || ""}`;
 
-          const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${LOVABLE_API_KEY}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              model: "google/gemini-3-flash-preview",
-              messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: userMessage },
-              ],
-            }),
-          });
-
-          const aiData = await aiResponse.json();
+          const aiData = await chatCompletion(
+            apiKey,
+            "tngtech/deepseek-r1t2-chimera:free",
+            [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userMessage },
+            ]
+          );
+          
           botReply = aiData.choices?.[0]?.message?.content || "I'm sorry, I couldn't process that.";
         }
  

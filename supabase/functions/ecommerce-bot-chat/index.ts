@@ -1,5 +1,6 @@
  import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createOpenRouterClient, chatCompletion } from "../_shared/openrouter.ts";
  
  const corsHeaders = {
    "Access-Control-Allow-Origin": "*",
@@ -142,10 +143,7 @@
    try {
      const { userMessage, botConfig, conversationHistory = [] } = await req.json();
  
-     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-     if (!LOVABLE_API_KEY) {
-       throw new Error("LOVABLE_API_KEY is not configured");
-     }
+      const apiKey = await createOpenRouterClient();
  
      const systemPrompt = `You are a ${botConfig?.personality || "helpful"} e-commerce sales assistant. ${botConfig?.description || ""}
  
@@ -226,25 +224,7 @@
        { role: "user", content: userMessage }
      ];
  
-     let response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-       method: "POST",
-       headers: {
-         Authorization: `Bearer ${LOVABLE_API_KEY}`,
-         "Content-Type": "application/json",
-       },
-       body: JSON.stringify({
-         model: "google/gemini-3-flash-preview",
-         messages,
-         tools,
-         tool_choice: "auto"
-       }),
-     });
- 
-     if (!response.ok) {
-       throw new Error(`AI API error: ${response.status}`);
-     }
- 
-     let aiData = await response.json();
+      let aiData = await chatCompletion(apiKey, "xiaomi/mimo-v2-flash:free", messages, tools);
      let assistantMessage = aiData.choices?.[0]?.message;
  
      // Handle tool calls
@@ -290,21 +270,7 @@
          content: toolResult
        });
  
-       response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-         method: "POST",
-         headers: {
-           Authorization: `Bearer ${LOVABLE_API_KEY}`,
-           "Content-Type": "application/json",
-         },
-         body: JSON.stringify({
-           model: "google/gemini-3-flash-preview",
-           messages,
-           tools,
-           tool_choice: "auto"
-         }),
-       });
- 
-       aiData = await response.json();
+        aiData = await chatCompletion(apiKey, "xiaomi/mimo-v2-flash:free", messages, tools);
        assistantMessage = aiData.choices?.[0]?.message;
      }
  
