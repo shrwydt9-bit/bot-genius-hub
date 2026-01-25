@@ -14,9 +14,102 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_suggestions: {
+        Row: {
+          ai_analysis: Json | null
+          bot_id: string | null
+          brand_id: string | null
+          created_at: string
+          description: string
+          id: string
+          priority: string | null
+          status: string | null
+          suggestion_type: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          ai_analysis?: Json | null
+          bot_id?: string | null
+          brand_id?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          priority?: string | null
+          status?: string | null
+          suggestion_type: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          ai_analysis?: Json | null
+          bot_id?: string | null
+          brand_id?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          priority?: string | null
+          status?: string | null
+          suggestion_type?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_suggestions_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "bots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_suggestions_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_events: {
+        Row: {
+          bot_id: string
+          created_at: string
+          event_data: Json | null
+          event_type: string
+          id: string
+          metadata: Json | null
+        }
+        Insert: {
+          bot_id: string
+          created_at?: string
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+        }
+        Update: {
+          bot_id?: string
+          created_at?: string
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_events_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "bots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bots: {
         Row: {
           bot_type: Database["public"]["Enums"]["bot_type"]
+          brand_id: string | null
           configuration: Json | null
           created_at: string
           description: string | null
@@ -31,6 +124,7 @@ export type Database = {
         }
         Insert: {
           bot_type: Database["public"]["Enums"]["bot_type"]
+          brand_id?: string | null
           configuration?: Json | null
           created_at?: string
           description?: string | null
@@ -45,6 +139,7 @@ export type Database = {
         }
         Update: {
           bot_type?: Database["public"]["Enums"]["bot_type"]
+          brand_id?: string | null
           configuration?: Json | null
           created_at?: string
           description?: string | null
@@ -56,6 +151,53 @@ export type Database = {
           platform?: Database["public"]["Enums"]["bot_platform"]
           updated_at?: string
           user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bots_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brands: {
+        Row: {
+          color_scheme: Json | null
+          created_at: string
+          description: string | null
+          id: string
+          industry: string | null
+          logo_url: string | null
+          name: string
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          color_scheme?: Json | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          industry?: string | null
+          logo_url?: string | null
+          name: string
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          color_scheme?: Json | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          industry?: string | null
+          logo_url?: string | null
+          name?: string
+          updated_at?: string
+          user_id?: string
+          website?: string | null
         }
         Relationships: []
       }
