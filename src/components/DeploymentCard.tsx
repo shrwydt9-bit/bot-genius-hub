@@ -2,7 +2,7 @@
  import { Card } from "@/components/ui/card";
  import { Button } from "@/components/ui/button";
  import { Badge } from "@/components/ui/badge";
- import { Check, Copy, ExternalLink, Trash2 } from "lucide-react";
+import { Check, Copy, Trash2, ShoppingBag, Package, MessageSquare } from "lucide-react";
  import { useToast } from "@/hooks/use-toast";
  import { supabase } from "@/integrations/supabase/client";
  
@@ -13,6 +13,10 @@
      webhook_url: string;
      is_active: boolean;
      created_at: string;
+    bots?: {
+      bot_type: string;
+      name: string;
+    };
    };
    onDelete: () => void;
  }
@@ -76,6 +80,25 @@
          </Button>
        </div>
  
+        {deployment.bots?.bot_type === "ecommerce" && (
+          <div className="mb-3 p-3 bg-primary/5 rounded-lg border border-primary/20">
+            <div className="flex items-center gap-2 mb-2">
+              <ShoppingBag className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium text-primary">E-commerce Bot Active</span>
+            </div>
+            <div className="space-y-1 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Package className="w-3 h-3" />
+                <span>Product recommendations & search</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <MessageSquare className="w-3 h-3" />
+                <span>Shopping cart & checkout links</span>
+              </div>
+            </div>
+          </div>
+        )}
+
        <div className="space-y-2">
          <div className="flex items-center gap-2">
            <code className="flex-1 px-2 py-1 bg-muted rounded text-xs truncate">

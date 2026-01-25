@@ -2,3 +2,12 @@ project_id = "dpphtdqurftwzggcjmuj"
 
 [functions.bot-chat]
 verify_jwt = false
+
+[functions.ecommerce-bot-chat]
+verify_jwt = false
+
+[functions.webhook-whatsapp]
+verify_jwt = false
+
+[functions.webhook-telegram]
+verify_jwt = false
