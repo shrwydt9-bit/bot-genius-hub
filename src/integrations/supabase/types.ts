@@ -201,6 +201,138 @@ export type Database = {
         }
         Relationships: []
       }
+      conversation_insights: {
+        Row: {
+          bot_id: string
+          created_at: string | null
+          data: Json | null
+          description: string
+          frequency: number | null
+          id: string
+          insight_type: string
+          priority: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          bot_id: string
+          created_at?: string | null
+          data?: Json | null
+          description: string
+          frequency?: number | null
+          id?: string
+          insight_type: string
+          priority?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          bot_id?: string
+          created_at?: string | null
+          data?: Json | null
+          description?: string
+          frequency?: number | null
+          id?: string
+          insight_type?: string
+          priority?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_insights_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "bots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversation_messages: {
+        Row: {
+          bot_id: string
+          content: string
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          role: string
+          session_id: string
+        }
+        Insert: {
+          bot_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          role: string
+          session_id: string
+        }
+        Update: {
+          bot_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          role?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_messages_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "bots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversation_sessions: {
+        Row: {
+          bot_id: string
+          duration_seconds: number | null
+          ended_at: string | null
+          id: string
+          message_count: number | null
+          metadata: Json | null
+          platform: string
+          session_id: string
+          started_at: string | null
+          user_satisfaction: number | null
+        }
+        Insert: {
+          bot_id: string
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          message_count?: number | null
+          metadata?: Json | null
+          platform: string
+          session_id: string
+          started_at?: string | null
+          user_satisfaction?: number | null
+        }
+        Update: {
+          bot_id?: string
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          message_count?: number | null
+          metadata?: Json | null
+          platform?: string
+          session_id?: string
+          started_at?: string | null
+          user_satisfaction?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_sessions_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "bots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customization_chats: {
         Row: {
           bot_id: string
