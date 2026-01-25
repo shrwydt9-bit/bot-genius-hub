@@ -71,3 +71,6 @@ verify_jwt = false
  
  [functions.webhook-matrix]
  verify_jwt = false
+ 
+ [functions.ai-template-suggestions]
+ verify_jwt = true
