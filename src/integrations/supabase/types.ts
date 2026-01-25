@@ -14,7 +14,83 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bots: {
+        Row: {
+          bot_type: Database["public"]["Enums"]["bot_type"]
+          configuration: Json | null
+          created_at: string
+          description: string | null
+          greeting_message: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          personality: string | null
+          platform: Database["public"]["Enums"]["bot_platform"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bot_type: Database["public"]["Enums"]["bot_type"]
+          configuration?: Json | null
+          created_at?: string
+          description?: string | null
+          greeting_message?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          personality?: string | null
+          platform: Database["public"]["Enums"]["bot_platform"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bot_type?: Database["public"]["Enums"]["bot_type"]
+          configuration?: Json | null
+          created_at?: string
+          description?: string | null
+          greeting_message?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          personality?: string | null
+          platform?: Database["public"]["Enums"]["bot_platform"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      customization_chats: {
+        Row: {
+          bot_id: string
+          content: string
+          created_at: string
+          id: string
+          role: string
+        }
+        Insert: {
+          bot_id: string
+          content: string
+          created_at?: string
+          id?: string
+          role: string
+        }
+        Update: {
+          bot_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customization_chats_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "bots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +99,19 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      bot_platform:
+        | "whatsapp"
+        | "telegram"
+        | "instagram"
+        | "facebook"
+        | "shopify"
+        | "slack"
+        | "discord"
+      bot_type:
+        | "customer_service"
+        | "lead_generation"
+        | "content_automation"
+        | "ecommerce"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +238,22 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      bot_platform: [
+        "whatsapp",
+        "telegram",
+        "instagram",
+        "facebook",
+        "shopify",
+        "slack",
+        "discord",
+      ],
+      bot_type: [
+        "customer_service",
+        "lead_generation",
+        "content_automation",
+        "ecommerce",
+      ],
+    },
   },
 } as const

@@ -1,0 +1,157 @@
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Navbar } from "@/components/Navbar";
+import { BotChatInterface } from "@/components/BotChatInterface";
+import { BotPreview } from "@/components/BotPreview";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Save } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+
+const Customize = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const platform = searchParams.get("platform") || "whatsapp";
+  const { toast } = useToast();
+
+  const [botData, setBotData] = useState({
+    name: "My Bot",
+    personality: "friendly and professional",
+    greetingMessage: "Hello! How can I help you today?",
+    platform,
+  });
+  const [botId, setBotId] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+
+  useEffect(() => {
+    createInitialBot();
+  }, []);
+
+  const createInitialBot = async () => {
+    setIsCreating(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          variant: "destructive",
+          title: "Authentication Required",
+          description: "Please sign in to create bots",
+        });
+        navigate("/");
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("bots")
+        .insert({
+          user_id: user.id,
+          name: botData.name,
+          platform: platform as any,
+          bot_type: "customer_service",
+          personality: botData.personality,
+          greeting_message: botData.greetingMessage,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      if (data) setBotId(data.id);
+    } catch (error) {
+      console.error("Error creating bot:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to create bot. Please try again.",
+      });
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!botId) return;
+
+    try {
+      const { error } = await supabase
+        .from("bots")
+        .update({
+          name: botData.name,
+          personality: botData.personality,
+          greeting_message: botData.greetingMessage,
+        })
+        .eq("id", botId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Saved",
+        description: "Your bot configuration has been saved.",
+      });
+    } catch (error) {
+      console.error("Error saving bot:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to save bot. Please try again.",
+      });
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <div className="pt-20 pb-8 px-4">
+        <div className="container">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" onClick={() => navigate("/platforms")}>
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <div>
+                <h1 className="text-3xl font-bold text-gradient">Customize Your Bot</h1>
+                <p className="text-muted-foreground">Chat with AI to modify your bot's behavior</p>
+              </div>
+            </div>
+            <Button onClick={handleSave} className="gradient-primary">
+              <Save className="w-4 h-4 mr-2" />
+              Save Bot
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-16rem)]">
+            <div className="lg:col-span-2">
+              <div className="h-full border border-border rounded-lg bg-card">
+                {isCreating ? (
+                  <div className="h-full flex items-center justify-center">
+                    <p className="text-muted-foreground">Creating your bot...</p>
+                  </div>
+                ) : botId ? (
+                  <BotChatInterface
+                    botId={botId}
+                    onBotUpdate={(updates) => setBotData((prev) => ({ ...prev, ...updates }))}
+                  />
+                ) : (
+                  <div className="h-full flex items-center justify-center">
+                    <p className="text-muted-foreground">Failed to create bot. Please refresh the page.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="lg:col-span-1">
+              <BotPreview
+                botName={botData.name}
+                personality={botData.personality}
+                greetingMessage={botData.greetingMessage}
+                platform={botData.platform}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Customize;
