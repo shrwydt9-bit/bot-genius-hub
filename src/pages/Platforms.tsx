@@ -2,8 +2,11 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
-import { MessageCircle, Send, Instagram, Facebook, ShoppingBag, Slack, ArrowRight } from "lucide-react";
+import { MessageCircle, Send, Instagram, Facebook, ShoppingBag, Slack, ArrowRight, Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { EcommerceBotInfo } from "@/components/EcommerceBotInfo";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const platformsData = [
   {
@@ -62,7 +65,10 @@ const platformsData = [
   },
 ];
 
-const Platforms = () => (
+const Platforms = () => {
+  const [showEcommerceInfo, setShowEcommerceInfo] = useState(false);
+
+  return (
   <div className="min-h-screen bg-background">
     <Navbar />
     <div className="pt-24 pb-16 px-4">
@@ -108,6 +114,24 @@ const Platforms = () => (
                       ))}
                     </ul>
                   </div>
+                  
+                  {platform.name === "Shopify" && (
+                    <Dialog open={showEcommerceInfo} onOpenChange={setShowEcommerceInfo}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="w-full gap-2 mb-2">
+                          <Info className="w-4 h-4" />
+                          E-commerce Bot Features
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                        <DialogHeader>
+                          <DialogTitle>E-commerce Bot Capabilities</DialogTitle>
+                        </DialogHeader>
+                        <EcommerceBotInfo />
+                      </DialogContent>
+                    </Dialog>
+                  )}
+
                   <Button className="w-full gradient-primary group mt-4">
                     Get Started <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
@@ -119,6 +143,7 @@ const Platforms = () => (
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default Platforms;

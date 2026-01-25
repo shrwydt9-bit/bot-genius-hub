@@ -82,26 +82,56 @@
        console.log(`Message from ${from}: ${userMessage}`);
  
        // Call AI to generate response
-       const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-       const systemPrompt = `You are a ${deployment.bots.personality || "friendly"} chatbot. ${deployment.bots.description || ""}`;
- 
-       const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-         method: "POST",
-         headers: {
-           Authorization: `Bearer ${LOVABLE_API_KEY}`,
-           "Content-Type": "application/json",
-         },
-         body: JSON.stringify({
-           model: "google/gemini-3-flash-preview",
-           messages: [
-             { role: "system", content: systemPrompt },
-             { role: "user", content: userMessage },
-           ],
-         }),
-       });
- 
-       const aiData = await aiResponse.json();
-       const botReply = aiData.choices?.[0]?.message?.content || "I'm sorry, I couldn't process that.";
+        let botReply: string;
+        
+        // Check if this is an e-commerce bot
+        if (deployment.bots.bot_type === "ecommerce") {
+          // Use e-commerce bot chat function
+          const ecommerceResponse = await fetch(
+            `${Deno.env.get("SUPABASE_URL")}/functions/v1/ecommerce-bot-chat`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+              },
+              body: JSON.stringify({
+                userMessage,
+                botConfig: {
+                  personality: deployment.bots.personality,
+                  description: deployment.bots.description,
+                  greeting: deployment.bots.greeting_message,
+                },
+                conversationHistory: [],
+              }),
+            }
+          );
+          
+          const ecommerceData = await ecommerceResponse.json();
+          botReply = ecommerceData.reply || "I'm sorry, I couldn't process that.";
+        } else {
+          // Use standard AI chat for non-ecommerce bots
+          const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+          const systemPrompt = `You are a ${deployment.bots.personality || "friendly"} chatbot. ${deployment.bots.description || ""}`;
+
+          const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${LOVABLE_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              model: "google/gemini-3-flash-preview",
+              messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: userMessage },
+              ],
+            }),
+          });
+
+          const aiData = await aiResponse.json();
+          botReply = aiData.choices?.[0]?.message?.content || "I'm sorry, I couldn't process that.";
+        }
  
        console.log(`Bot reply: ${botReply}`);
  
