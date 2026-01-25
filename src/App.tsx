@@ -6,9 +6,27 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Platforms from "./pages/Platforms";
 import Customize from "./pages/Customize";
+import Storefront from "./pages/Storefront";
+import ProductDetail from "./pages/ProductDetail";
 import NotFound from "./pages/NotFound";
+import { useCartSync } from "./hooks/useCartSync";
 
 const queryClient = new QueryClient();
+
+const AppContent = () => {
+  useCartSync();
+  return (
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/platforms" element={<Platforms />} />
+      <Route path="/customize" element={<Customize />} />
+      <Route path="/storefront" element={<Storefront />} />
+      <Route path="/product/:handle" element={<ProductDetail />} />
+      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -16,13 +34,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/platforms" element={<Platforms />} />
-          <Route path="/customize" element={<Customize />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AppContent />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
