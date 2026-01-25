@@ -277,6 +277,36 @@ export type Database = {
           },
         ]
       }
+      platform_integrations: {
+        Row: {
+          created_at: string | null
+          credentials: Json
+          id: string
+          is_active: boolean | null
+          platform: Database["public"]["Enums"]["bot_platform"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          credentials: Json
+          id?: string
+          is_active?: boolean | null
+          platform: Database["public"]["Enums"]["bot_platform"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          credentials?: Json
+          id?: string
+          is_active?: boolean | null
+          platform?: Database["public"]["Enums"]["bot_platform"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       webhook_logs: {
         Row: {
           created_at: string
@@ -328,6 +358,25 @@ export type Database = {
         | "shopify"
         | "slack"
         | "discord"
+        | "email"
+        | "sms"
+        | "linkedin"
+        | "tiktok"
+        | "microsoft_teams"
+        | "twitter"
+        | "snapchat"
+        | "wechat"
+        | "line"
+        | "viber"
+        | "pinterest"
+        | "reddit"
+        | "youtube"
+        | "google_business"
+        | "apple_messages"
+        | "rcs"
+        | "kik"
+        | "signal"
+        | "matrix"
       bot_type:
         | "customer_service"
         | "lead_generation"
@@ -468,6 +517,25 @@ export const Constants = {
         "shopify",
         "slack",
         "discord",
+        "email",
+        "sms",
+        "linkedin",
+        "tiktok",
+        "microsoft_teams",
+        "twitter",
+        "snapchat",
+        "wechat",
+        "line",
+        "viber",
+        "pinterest",
+        "reddit",
+        "youtube",
+        "google_business",
+        "apple_messages",
+        "rcs",
+        "kik",
+        "signal",
+        "matrix",
       ],
       bot_type: [
         "customer_service",

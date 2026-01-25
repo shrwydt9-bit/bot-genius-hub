@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
-import { MessageCircle, Send, Instagram, Facebook, ShoppingBag, Slack, ArrowRight, Info } from "lucide-react";
+ import { MessageCircle, Send, Instagram, Facebook, ShoppingBag, Slack, ArrowRight, Info, Mail, Phone, Linkedin, Music, Hash, Users, Twitter, Camera, Grid, Building, Apple, Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { EcommerceBotInfo } from "@/components/EcommerceBotInfo";
 import { useState } from "react";
@@ -54,15 +54,78 @@ const platformsData = [
     features: ["Product search", "Order tracking", "Inventory sync", "Checkout support"],
     useCases: ["Shopping assistant", "Order updates", "Product recommendations"],
   },
-  {
-    name: "Slack",
-    icon: Slack,
-    color: "hsl(185 90% 39%)",
-    category: "Business",
-    description: "Create productivity bots for your Slack workspace",
-    features: ["Slash commands", "Workflow automation", "Channel integration", "Notifications"],
-    useCases: ["Team automation", "HR assistant", "Project updates"],
-  },
+ {
+   name: "Slack",
+   icon: Slack,
+   color: "hsl(185 90% 39%)",
+   category: "Business",
+   description: "Create productivity bots for your Slack workspace",
+   features: ["Slash commands", "Workflow automation", "Channel integration", "Notifications"],
+   useCases: ["Team automation", "HR assistant", "Project updates"],
+ },
+ {
+   name: "Discord",
+   icon: Hash,
+   color: "hsl(235 86% 65%)",
+   category: "Business",
+   description: "Build community bots for Discord servers",
+   features: ["Slash commands", "Embeds", "Moderation", "Events"],
+   useCases: ["Community management", "Gaming", "Support server"],
+ },
+ {
+   name: "Microsoft Teams",
+   icon: Users,
+   color: "hsl(232 76% 55%)",
+   category: "Business",
+   description: "Enterprise collaboration bots for Teams",
+   features: ["Cards", "Tabs", "Meetings", "Channels"],
+   useCases: ["Workplace automation", "HR bot", "Meeting assistant"],
+ },
+ {
+   name: "LinkedIn",
+   icon: Linkedin,
+   color: "hsl(201 100% 35%)",
+   category: "Social Media",
+   description: "Professional networking automation",
+   features: ["Messaging", "Connection requests", "Job posts"],
+   useCases: ["Lead generation", "Recruitment", "Networking"],
+ },
+ {
+   name: "TikTok",
+   icon: Music,
+   color: "hsl(0 0% 0%)",
+   category: "Social Media",
+   description: "Engage with TikTok audience",
+   features: ["Comment replies", "DMs", "Trends"],
+   useCases: ["Brand engagement", "Creator support", "Viral marketing"],
+ },
+ {
+   name: "Twitter/X",
+   icon: Twitter,
+   color: "hsl(203 89% 53%)",
+   category: "Social Media",
+   description: "Automate Twitter engagement",
+   features: ["DMs", "Tweet replies", "Threads"],
+   useCases: ["Customer support", "Brand monitoring", "Engagement"],
+ },
+ {
+   name: "Email",
+   icon: Mail,
+   color: "hsl(210 100% 50%)",
+   category: "Direct",
+   description: "AI-powered email automation",
+   features: ["Auto-reply", "Categorization", "Smart routing"],
+   useCases: ["Customer service", "Lead nurturing", "Support tickets"],
+ },
+ {
+   name: "SMS",
+   icon: Phone,
+   color: "hsl(142 71% 45%)",
+   category: "Direct",
+   description: "SMS and text message automation",
+   features: ["2-way messaging", "Campaigns", "Alerts"],
+   useCases: ["Appointment reminders", "Notifications", "Surveys"],
+ },
 ];
 
 const Platforms = () => {
