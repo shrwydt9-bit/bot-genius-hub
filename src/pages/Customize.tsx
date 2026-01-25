@@ -3,16 +3,19 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { BotChatInterface } from "@/components/BotChatInterface";
 import { BotPreview } from "@/components/BotPreview";
+ import { AiCopywritingPanel } from "@/components/AiCopywritingPanel";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Save } from "lucide-react";
+ import { ArrowLeft, Save, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Customize = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const platform = searchParams.get("platform") || "whatsapp";
   const { toast } = useToast();
+   const [activeView, setActiveView] = useState<"chat" | "ai">("chat");
 
   const [botData, setBotData] = useState({
     name: "My Bot",
@@ -119,8 +122,20 @@ const Customize = () => {
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-16rem)]">
-            <div className="lg:col-span-2">
+         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-18rem)]">
+           <div className="lg:col-span-2 space-y-4">
+             <Tabs value={activeView} onValueChange={(v) => setActiveView(v as "chat" | "ai")}>
+               <TabsList className="grid w-full grid-cols-2">
+                 <TabsTrigger value="chat">
+                   AI Customization Chat
+                 </TabsTrigger>
+                 <TabsTrigger value="ai">
+                   <Sparkles className="w-4 h-4 mr-2" />
+                   AI Copywriting Assistant
+                 </TabsTrigger>
+               </TabsList>
+
+               <TabsContent value="chat" className="mt-4 h-[calc(100vh-24rem)]">
               <div className="h-full border border-border rounded-lg bg-card">
                 {isCreating ? (
                   <div className="h-full flex items-center justify-center">
@@ -137,6 +152,25 @@ const Customize = () => {
                   </div>
                 )}
               </div>
+               </TabsContent>
+
+               <TabsContent value="ai" className="mt-4 h-[calc(100vh-24rem)]">
+                 <div className="h-full overflow-y-auto">
+                   {botId ? (
+                     <AiCopywritingPanel
+                       platform={platform}
+                       currentGreeting={botData.greetingMessage}
+                       currentPersonality={botData.personality}
+                       onApply={(updates) => setBotData((prev) => ({ ...prev, ...updates }))}
+                     />
+                   ) : (
+                     <div className="h-full flex items-center justify-center">
+                       <p className="text-muted-foreground">Loading bot data...</p>
+                     </div>
+                   )}
+                 </div>
+               </TabsContent>
+             </Tabs>
             </div>
 
             <div className="lg:col-span-1">

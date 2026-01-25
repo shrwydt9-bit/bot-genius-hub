@@ -74,3 +74,6 @@ verify_jwt = false
  
  [functions.ai-template-suggestions]
  verify_jwt = true
+ 
+ [functions.ai-copywriting-assistant]
+ verify_jwt = true
