@@ -9,7 +9,7 @@
  import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
  import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
  import { Badge } from "@/components/ui/badge";
- import { Plus, Edit, Trash2, Copy, Eye, MessageSquare } from "lucide-react";
+ import { Plus, Edit, Trash2, Copy, Eye, MessageSquare, Sparkles, Loader2 } from "lucide-react";
  import { useToast } from "@/hooks/use-toast";
  import { supabase } from "@/integrations/supabase/client";
  import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -42,9 +42,18 @@
    const { toast } = useToast();
    const queryClient = useQueryClient();
    const [isCreateOpen, setIsCreateOpen] = useState(false);
+   const [isAiSuggestionsOpen, setIsAiSuggestionsOpen] = useState(false);
+   const [isGenerating, setIsGenerating] = useState(false);
+   const [aiSuggestions, setAiSuggestions] = useState<any[]>([]);
    const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null);
    const [previewValues, setPreviewValues] = useState<Record<string, string>>({});
-   
+   const [aiFormData, setAiFormData] = useState({
+     platform: "whatsapp",
+     industry: "",
+     botType: "customer_service",
+     brandInfo: "",
+   });
+
    const [formData, setFormData] = useState({
      name: "",
      description: "",
@@ -141,7 +150,42 @@
      });
      return result;
    };
- 
+
+   const generateAiSuggestions = async () => {
+     setIsGenerating(true);
+     try {
+       const { data, error } = await supabase.functions.invoke("ai-template-suggestions", {
+         body: aiFormData,
+       });
+       
+       if (error) throw error;
+       
+       setAiSuggestions(data.suggestions || []);
+       toast({ title: "AI suggestions generated successfully!" });
+     } catch (error) {
+       console.error("AI generation error:", error);
+       toast({ 
+         title: "Failed to generate suggestions", 
+         description: "Please try again later",
+         variant: "destructive" 
+       });
+     } finally {
+       setIsGenerating(false);
+     }
+   };
+
+   const useAiSuggestion = (suggestion: any) => {
+     setFormData({
+       name: suggestion.name,
+       description: suggestion.description,
+       platform: aiFormData.platform,
+       template_content: suggestion.template_content,
+       category: suggestion.category,
+     });
+     setIsAiSuggestionsOpen(false);
+     setIsCreateOpen(true);
+   };
+
    return (
      <div className="min-h-screen bg-background">
        <Navbar />
@@ -156,7 +200,154 @@
                <h1 className="text-4xl font-bold text-gradient mb-2">Response Templates</h1>
                <p className="text-muted-foreground">Create reusable message templates with dynamic variables</p>
              </div>
-             <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+             <div className="flex gap-2">
+               <Dialog open={isAiSuggestionsOpen} onOpenChange={setIsAiSuggestionsOpen}>
+                 <DialogTrigger asChild>
+                   <Button variant="outline" className="gap-2">
+                     <Sparkles className="w-4 h-4" />
+                     AI Suggestions
+                   </Button>
+                 </DialogTrigger>
+                 <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                   <DialogHeader>
+                     <DialogTitle className="flex items-center gap-2">
+                       <Sparkles className="w-5 h-5 text-primary" />
+                       AI-Powered Template Suggestions
+                     </DialogTitle>
+                     <DialogDescription>
+                       Get intelligent template recommendations based on your platform and industry
+                     </DialogDescription>
+                   </DialogHeader>
+                   
+                   {aiSuggestions.length === 0 ? (
+                     <div className="space-y-4">
+                       <div className="grid grid-cols-2 gap-4">
+                         <div>
+                           <Label>Platform</Label>
+                           <Select 
+                             value={aiFormData.platform} 
+                             onValueChange={(value) => setAiFormData({ ...aiFormData, platform: value })}
+                           >
+                             <SelectTrigger>
+                               <SelectValue />
+                             </SelectTrigger>
+                             <SelectContent>
+                               {platforms.map(p => (
+                                 <SelectItem key={p} value={p}>{p}</SelectItem>
+                               ))}
+                             </SelectContent>
+                           </Select>
+                         </div>
+                         <div>
+                           <Label>Bot Type</Label>
+                           <Select 
+                             value={aiFormData.botType} 
+                             onValueChange={(value) => setAiFormData({ ...aiFormData, botType: value })}
+                           >
+                             <SelectTrigger>
+                               <SelectValue />
+                             </SelectTrigger>
+                             <SelectContent>
+                               <SelectItem value="customer_service">Customer Service</SelectItem>
+                               <SelectItem value="lead_generation">Lead Generation</SelectItem>
+                               <SelectItem value="ecommerce">E-commerce</SelectItem>
+                               <SelectItem value="content_automation">Content Automation</SelectItem>
+                             </SelectContent>
+                           </Select>
+                         </div>
+                       </div>
+                       <div>
+                         <Label>Industry (Optional)</Label>
+                         <Input
+                           value={aiFormData.industry}
+                           onChange={(e) => setAiFormData({ ...aiFormData, industry: e.target.value })}
+                           placeholder="e.g., Healthcare, Retail, Technology"
+                         />
+                       </div>
+                       <div>
+                         <Label>Brand Information (Optional)</Label>
+                         <Textarea
+                           value={aiFormData.brandInfo}
+                           onChange={(e) => setAiFormData({ ...aiFormData, brandInfo: e.target.value })}
+                           placeholder="Describe your brand tone, values, or any specific requirements..."
+                           rows={3}
+                         />
+                       </div>
+                       <Button
+                         onClick={generateAiSuggestions}
+                         disabled={isGenerating}
+                         className="w-full gradient-primary"
+                       >
+                         {isGenerating ? (
+                           <>
+                             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                             Generating Templates...
+                           </>
+                         ) : (
+                           <>
+                             <Sparkles className="w-4 h-4 mr-2" />
+                             Generate AI Suggestions
+                           </>
+                         )}
+                       </Button>
+                     </div>
+                   ) : (
+                     <div className="space-y-4">
+                       <div className="flex justify-between items-center">
+                         <p className="text-sm text-muted-foreground">
+                           {aiSuggestions.length} templates generated
+                         </p>
+                         <Button
+                           variant="outline"
+                           size="sm"
+                           onClick={() => setAiSuggestions([])}
+                         >
+                           New Generation
+                         </Button>
+                       </div>
+                       <div className="grid gap-3">
+                         {aiSuggestions.map((suggestion, idx) => (
+                           <Card key={idx} className="hover:border-primary transition-colors">
+                             <CardHeader>
+                               <div className="flex justify-between items-start">
+                                 <div>
+                                   <CardTitle className="text-lg">{suggestion.name}</CardTitle>
+                                   <CardDescription>{suggestion.description}</CardDescription>
+                                 </div>
+                                 <Badge variant="secondary">{suggestion.category}</Badge>
+                               </div>
+                             </CardHeader>
+                             <CardContent className="space-y-3">
+                               <div className="bg-muted p-3 rounded-lg font-mono text-sm">
+                                 {suggestion.template_content}
+                               </div>
+                               {suggestion.variables?.length > 0 && (
+                                 <div className="flex flex-wrap gap-2">
+                                   <span className="text-xs text-muted-foreground">Variables:</span>
+                                   {suggestion.variables.map((v: Variable) => (
+                                     <Badge key={v.name} variant="outline" className="text-xs">
+                                       {"{" + v.name + "}"}
+                                     </Badge>
+                                   ))}
+                                 </div>
+                               )}
+                               <Button
+                                 onClick={() => useAiSuggestion(suggestion)}
+                                 size="sm"
+                                 className="w-full"
+                               >
+                                 Use This Template
+                               </Button>
+                             </CardContent>
+                           </Card>
+                         ))}
+                       </div>
+                     </div>
+                   )}
+                 </DialogContent>
+               </Dialog>
+               
+               <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                <DialogTrigger asChild>
                  <Button className="gradient-primary gap-2">
                    <Plus className="w-4 h-4" />
@@ -238,6 +429,7 @@
                  </div>
                </DialogContent>
              </Dialog>
+             </div>
            </motion.div>
  
            {isLoading ? (
