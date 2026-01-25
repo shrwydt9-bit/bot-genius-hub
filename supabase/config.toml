@@ -77,3 +77,6 @@ verify_jwt = false
  
  [functions.ai-copywriting-assistant]
  verify_jwt = true
+ 
+ [functions.conversation-analytics]
+ verify_jwt = true
