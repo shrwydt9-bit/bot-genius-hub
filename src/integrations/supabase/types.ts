@@ -91,6 +91,85 @@ export type Database = {
           },
         ]
       }
+      deployments: {
+        Row: {
+          bot_id: string
+          config: Json | null
+          created_at: string
+          id: string
+          is_active: boolean
+          platform: string
+          updated_at: string
+          webhook_secret: string
+          webhook_url: string
+        }
+        Insert: {
+          bot_id: string
+          config?: Json | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          platform: string
+          updated_at?: string
+          webhook_secret?: string
+          webhook_url: string
+        }
+        Update: {
+          bot_id?: string
+          config?: Json | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          platform?: string
+          updated_at?: string
+          webhook_secret?: string
+          webhook_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deployments_bot_id_fkey"
+            columns: ["bot_id"]
+            isOneToOne: false
+            referencedRelation: "bots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      webhook_logs: {
+        Row: {
+          created_at: string
+          deployment_id: string
+          error: string | null
+          id: string
+          request_body: Json
+          response_status: number | null
+        }
+        Insert: {
+          created_at?: string
+          deployment_id: string
+          error?: string | null
+          id?: string
+          request_body: Json
+          response_status?: number | null
+        }
+        Update: {
+          created_at?: string
+          deployment_id?: string
+          error?: string | null
+          id?: string
+          request_body?: Json
+          response_status?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_logs_deployment_id_fkey"
+            columns: ["deployment_id"]
+            isOneToOne: false
+            referencedRelation: "deployments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
