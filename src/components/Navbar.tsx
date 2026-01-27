@@ -41,7 +41,9 @@ export const Navbar = () => {
             </Button>
           </Link>
           <CartDrawer />
-          <Button variant="ghost">Sign In</Button>
+          <Button variant="ghost" asChild>
+            <Link to="/auth">Sign In</Link>
+          </Button>
           <Button className="gradient-primary">Get Started</Button>
         </div>
 
