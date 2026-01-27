@@ -9,6 +9,7 @@ import Customize from "./pages/Customize";
 import Storefront from "./pages/Storefront";
 import ProductDetail from "./pages/ProductDetail";
  import ResponseTemplates from "./pages/ResponseTemplates";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import { useCartSync } from "./hooks/useCartSync";
 
@@ -19,6 +20,7 @@ const AppContent = () => {
   return (
     <Routes>
       <Route path="/" element={<Index />} />
+      <Route path="/auth" element={<Auth />} />
       <Route path="/platforms" element={<Platforms />} />
       <Route path="/customize" element={<Customize />} />
       <Route path="/storefront" element={<Storefront />} />
