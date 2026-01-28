@@ -12,6 +12,7 @@ export const Navbar = () => {
     { label: "Home", href: "/" },
     { label: "Features", href: "/#features" },
     { label: "Platforms", href: "/#platforms" },
+    { label: "AI Chat", href: "/ai-chat" },
    { label: "Templates", href: "/templates" },
     { label: "Store", href: "/storefront" },
   ];

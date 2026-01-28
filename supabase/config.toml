@@ -80,3 +80,6 @@ verify_jwt = false
  
  [functions.conversation-analytics]
  verify_jwt = true
+
+[functions.ai-chat]
+verify_jwt = false
