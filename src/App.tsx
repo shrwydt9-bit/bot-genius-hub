@@ -11,6 +11,7 @@ import ProductDetail from "./pages/ProductDetail";
  import ResponseTemplates from "./pages/ResponseTemplates";
 import Auth from "./pages/Auth";
 import AiChat from "./pages/AiChat";
+import Bots from "./pages/Bots";
 import NotFound from "./pages/NotFound";
 import { useCartSync } from "./hooks/useCartSync";
 
@@ -23,6 +24,7 @@ const AppContent = () => {
       <Route path="/" element={<Index />} />
       <Route path="/auth" element={<Auth />} />
       <Route path="/ai-chat" element={<AiChat />} />
+      <Route path="/bots" element={<Bots />} />
       <Route path="/platforms" element={<Platforms />} />
       <Route path="/customize" element={<Customize />} />
       <Route path="/storefront" element={<Storefront />} />
