@@ -14,6 +14,7 @@ const Customize = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const platform = searchParams.get("platform") || "whatsapp";
+  const botIdParam = searchParams.get("botId");
   const { toast } = useToast();
    const [activeView, setActiveView] = useState<"chat" | "ai">("chat");
 
@@ -27,8 +28,60 @@ const Customize = () => {
   const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
+    setBotData((prev) => ({ ...prev, platform }));
+  }, [platform]);
+
+  useEffect(() => {
+    if (botIdParam) {
+      loadExistingBot(botIdParam);
+      return;
+    }
     createInitialBot();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [botIdParam]);
+
+  const loadExistingBot = async (id: string) => {
+    setIsCreating(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        toast({
+          variant: "destructive",
+          title: "Authentication Required",
+          description: "Please sign in to customize bots",
+        });
+        navigate("/auth");
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("bots")
+        .select("id,name,platform,bot_type,personality,greeting_message")
+        .eq("id", id)
+        .single();
+
+      if (error) throw error;
+
+      setBotId(data.id);
+      setBotData({
+        name: data.name,
+        personality: data.personality ?? "friendly and professional",
+        greetingMessage: data.greeting_message ?? "Hello! How can I help you today?",
+        platform: data.platform as any,
+      });
+    } catch (error) {
+      console.error("Error loading bot:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Couldn't load this bot. Please try again.",
+      });
+      navigate("/platforms");
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   const createInitialBot = async () => {
     setIsCreating(true);
@@ -41,7 +94,7 @@ const Customize = () => {
           title: "Authentication Required",
           description: "Please sign in to create bots",
         });
-        navigate("/");
+        navigate("/auth");
         return;
       }
 

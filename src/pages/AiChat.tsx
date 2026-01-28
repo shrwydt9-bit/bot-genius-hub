@@ -218,7 +218,7 @@ export default function AiChat() {
         .single();
       if (error) throw error;
       toast({ title: "Bot created" });
-      if (data?.platform) navigate(`/customize?platform=${data.platform}`);
+      if (data?.id && data?.platform) navigate(`/customize?platform=${data.platform}&botId=${data.id}`);
     } catch (e: any) {
       toast({ variant: "destructive", title: "Failed to create bot", description: e?.message ?? "" });
     }
