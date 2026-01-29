@@ -6,6 +6,11 @@ import { Send, Loader2, Bot, User } from "lucide-react";
 import { streamChat } from "@/lib/streamChat";
 import ReactMarkdown from "react-markdown";
 import { useToast } from "@/hooks/use-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Brain } from "lucide-react";
+import type { ModelOption } from "@/lib/streamChat";
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -21,6 +26,8 @@ export const BotChatInterface = ({ botId, initialMessages = [], onBotUpdate }: B
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const [model, setModel] = useState<ModelOption>("qwen/qwen3-coder:free");
+  const [deepThinking, setDeepThinking] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -54,6 +61,8 @@ export const BotChatInterface = ({ botId, initialMessages = [], onBotUpdate }: B
       await streamChat({
         messages: [...messages, userMessage],
         botId,
+        model,
+        deepThinking,
         onDelta: upsertAssistant,
         onDone: () => setIsLoading(false),
         onError: (error) => {
@@ -115,6 +124,30 @@ export const BotChatInterface = ({ botId, initialMessages = [], onBotUpdate }: B
       </div>
 
       <div className="border-t border-border p-4">
+        <div className="grid grid-cols-2 gap-3 mb-3 p-3 rounded-lg border border-border bg-muted/30">
+          <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground">Model</Label>
+            <Select value={model} onValueChange={(v) => setModel(v as ModelOption)}>
+              <SelectTrigger className="h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="qwen/qwen3-coder:free">Qwen 3 Coder (Free)</SelectItem>
+                <SelectItem value="google/gemini-3-flash-preview">Gemini 3 Flash</SelectItem>
+                <SelectItem value="google/gemini-2.5-pro">Gemini 2.5 Pro</SelectItem>
+                <SelectItem value="openai/gpt-5.2">GPT-5.2</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground">Deep Thinking</Label>
+            <div className="flex items-center gap-2 h-8 px-3 rounded-md border border-input bg-background">
+              <Switch id="botDeepThinking" checked={deepThinking} onCheckedChange={setDeepThinking} />
+              <Brain className="h-3 w-3 text-muted-foreground" />
+            </div>
+          </div>
+        </div>
+
         <div className="flex gap-2">
           <Textarea
             value={input}
