@@ -3,7 +3,7 @@ import { Brain, Globe, Menu } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import brandIcon from "@/assets/orion-atlas-icon.png";
+import brandIcon from "@/assets/orion-atlas-icon-square.png";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
