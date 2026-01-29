@@ -1,15 +1,14 @@
 import { Hero } from "@/components/Hero";
 import { Features } from "@/components/Features";
 import { PlatformGrid } from "@/components/PlatformGrid";
-import { Navbar } from "@/components/Navbar";
+import { PageShell } from "@/components/layout/PageShell";
 import { HomeSolutions } from "@/components/HomeSolutions";
 import { HomeEcommerce } from "@/components/HomeEcommerce";
 import { HomeMore } from "@/components/HomeMore";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+    <PageShell containerClassName="">
       <Hero />
       <div id="solutions">
         <HomeSolutions />
@@ -26,7 +25,7 @@ const Index = () => {
       <div id="more">
         <HomeMore />
       </div>
-    </div>
+    </PageShell>
   );
 };
 

@@ -8,6 +8,7 @@ export async function streamAiChat({
   accessToken,
   model,
   deepThinking,
+  signal,
   onDelta,
   onDone,
   onError,
@@ -17,6 +18,7 @@ export async function streamAiChat({
   accessToken: string;
   model?: ModelOption;
   deepThinking?: boolean;
+  signal?: AbortSignal;
   onDelta: (deltaText: string) => void;
   onDone: () => void;
   onError: (error: Error) => void;
@@ -32,6 +34,7 @@ export async function streamAiChat({
         Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({ messages, intent, model, deepThinking }),
+      signal,
     });
 
     if (!response.ok || !response.body) {

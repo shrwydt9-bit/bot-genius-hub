@@ -1,7 +1,7 @@
  import { useState, useEffect } from "react";
  import { useParams, useNavigate } from "react-router-dom";
  import { motion } from "framer-motion";
- import { Navbar } from "@/components/Navbar";
+  import { PageShell } from "@/components/layout/PageShell";
  import { Button } from "@/components/ui/button";
  import { Card, CardContent } from "@/components/ui/card";
  import { Badge } from "@/components/ui/badge";
@@ -63,25 +63,23 @@
  
    if (loading) {
      return (
-       <div className="min-h-screen bg-background">
-         <Navbar />
-         <div className="flex items-center justify-center py-40">
+        <PageShell>
+          <div className="flex items-center justify-center py-40">
            <Loader2 className="w-8 h-8 animate-spin text-primary" />
          </div>
-       </div>
+        </PageShell>
      );
    }
  
    if (!product) {
      return (
-       <div className="min-h-screen bg-background">
-         <Navbar />
-         <div className="container pt-24 text-center">
+        <PageShell>
+          <div className="container pt-6 text-center">
            <Package className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
            <h2 className="text-2xl font-bold mb-2">Product not found</h2>
            <Button onClick={() => navigate('/storefront')}>Back to Store</Button>
          </div>
-       </div>
+        </PageShell>
      );
    }
  
@@ -89,17 +87,17 @@
    const variants = product.variants.edges.map((edge: any) => edge.node);
  
    return (
-     <div className="min-h-screen bg-background">
-       <Navbar />
-       <div className="container pt-24 pb-16 px-4">
-         <Button variant="ghost" onClick={() => navigate('/storefront')} className="mb-6">
-           <ArrowLeft className="w-4 h-4 mr-2" />
-           Back to Store
-         </Button>
+      <PageShell containerClassName="container">
+        <div className="flex items-center justify-between gap-3 mb-6">
+          <Button variant="outline" onClick={() => navigate('/storefront')}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Store
+          </Button>
+        </div>
  
          <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-             <Card className="overflow-hidden border-primary/20">
+              <Card className="overflow-hidden glass-panel glow-border">
                <div className="aspect-square bg-muted">
                  {images[selectedImage] ? (
                    <img
@@ -133,7 +131,7 @@
  
            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
              <div>
-               <h1 className="text-4xl font-bold mb-4">{product.title}</h1>
+                <h1 className="text-4xl font-bold mb-4">{product.title}</h1>
                <p className="text-3xl font-bold text-primary">
                  {selectedVariant?.price.currencyCode} {parseFloat(selectedVariant?.price.amount || 0).toFixed(2)}
                </p>
@@ -178,7 +176,7 @@
  
              <div className="flex items-center gap-2">
                {selectedVariant?.availableForSale ? (
-                 <Badge className="bg-accent">In Stock</Badge>
+                  <Badge className="bg-accent">In Stock</Badge>
                ) : (
                  <Badge variant="destructive">Out of Stock</Badge>
                )}
@@ -201,8 +199,7 @@
              </Button>
            </motion.div>
          </div>
-       </div>
-     </div>
+      </PageShell>
    );
  };
  
