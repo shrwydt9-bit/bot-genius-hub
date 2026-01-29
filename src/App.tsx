@@ -6,19 +6,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Platforms from "./pages/Platforms";
 import Customize from "./pages/Customize";
-import Storefront from "./pages/Storefront";
-import ProductDetail from "./pages/ProductDetail";
  import ResponseTemplates from "./pages/ResponseTemplates";
 import Auth from "./pages/Auth";
 import AiChat from "./pages/AiChat";
 import Bots from "./pages/Bots";
 import NotFound from "./pages/NotFound";
-import { useCartSync } from "./hooks/useCartSync";
 
 const queryClient = new QueryClient();
 
 const AppContent = () => {
-  useCartSync();
   return (
     <Routes>
       <Route path="/" element={<Index />} />
@@ -27,8 +23,6 @@ const AppContent = () => {
       <Route path="/bots" element={<Bots />} />
       <Route path="/platforms" element={<Platforms />} />
       <Route path="/customize" element={<Customize />} />
-      <Route path="/storefront" element={<Storefront />} />
-      <Route path="/product/:handle" element={<ProductDetail />} />
      <Route path="/templates" element={<ResponseTemplates />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />

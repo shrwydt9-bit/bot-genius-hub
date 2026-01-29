@@ -2,11 +2,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
- import { MessageCircle, Send, Instagram, Facebook, ShoppingBag, Slack, ArrowRight, Info, Mail, Phone, Linkedin, Music, Hash, Users, Twitter, Camera, Grid, Building, Apple, Shield } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { EcommerceBotInfo } from "@/components/EcommerceBotInfo";
-import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { MessageCircle, Send, Instagram, Facebook, Slack, ArrowRight, Mail, Phone, Linkedin, Music, Hash, Users, Twitter, Camera, Grid, Building, Apple, Shield } from "lucide-react";
 
 const platformsData = [
   {
@@ -44,15 +40,6 @@ const platformsData = [
     description: "Connect with customers through Facebook's massive user base",
     features: ["Messenger bot", "Page integration", "Quick replies", "Templates"],
     useCases: ["Customer service", "Event RSVP", "Product recommendations"],
-  },
-  {
-    name: "Shopify",
-    icon: ShoppingBag,
-    color: "hsl(149 59% 48%)",
-    category: "E-commerce",
-    description: "Enhance your Shopify store with AI-powered shopping assistants",
-    features: ["Product search", "Order tracking", "Inventory sync", "Checkout support"],
-    useCases: ["Shopping assistant", "Order updates", "Product recommendations"],
   },
  {
    name: "Slack",
@@ -129,8 +116,6 @@ const platformsData = [
 ];
 
 const Platforms = () => {
-  const [showEcommerceInfo, setShowEcommerceInfo] = useState(false);
-
   return (
   <div className="min-h-screen bg-background">
     <Navbar />
@@ -178,23 +163,6 @@ const Platforms = () => {
                     </ul>
                   </div>
                   
-                  {platform.name === "Shopify" && (
-                    <Dialog open={showEcommerceInfo} onOpenChange={setShowEcommerceInfo}>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" size="sm" className="w-full gap-2 mb-2">
-                          <Info className="w-4 h-4" />
-                          E-commerce Bot Features
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-                        <DialogHeader>
-                          <DialogTitle>E-commerce Bot Capabilities</DialogTitle>
-                        </DialogHeader>
-                        <EcommerceBotInfo />
-                      </DialogContent>
-                    </Dialog>
-                  )}
-
                   <Button className="w-full gradient-primary group mt-4">
                     Get Started <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
