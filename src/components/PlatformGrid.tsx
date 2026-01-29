@@ -1,6 +1,8 @@
+import * as React from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { MessageCircle, Send, ShoppingBag, Slack as SlackIcon, Instagram, Facebook } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const platforms = [
   { name: "WhatsApp", icon: MessageCircle, color: "hsl(142 71% 45%)", category: "Messaging" },
@@ -11,8 +13,9 @@ const platforms = [
   { name: "Slack", icon: SlackIcon, color: "hsl(185 90% 39%)", category: "Business" },
 ];
 
-export const PlatformGrid = () => (
-  <section className="py-24 px-4 bg-card/50">
+export const PlatformGrid = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(
+  ({ className, ...props }, ref) => (
+  <section ref={ref} className={cn("py-24 px-4 bg-card/50", className)} {...props}>
     <div className="container">
       <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
         <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gradient">Deploy Everywhere</h2>
@@ -36,4 +39,6 @@ export const PlatformGrid = () => (
       </div>
     </div>
   </section>
-);
+));
+
+PlatformGrid.displayName = "PlatformGrid";

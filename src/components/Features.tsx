@@ -1,6 +1,8 @@
+import * as React from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bot, Zap, Sparkles, MessageSquare, BarChart, Settings } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const features = [
   { icon: Bot, title: "AI-Powered Creation", description: "Describe what you want and let AI build your bot automatically with natural language." },
@@ -11,8 +13,9 @@ const features = [
   { icon: Settings, title: "Easy Customization", description: "Modify bot personality, responses, and behavior through simple conversations." },
 ];
 
-export const Features = () => (
-  <section className="py-24 px-4">
+export const Features = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(
+  ({ className, ...props }, ref) => (
+  <section ref={ref} className={cn("py-24 px-4", className)} {...props}>
     <div className="container">
       <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
         <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gradient">Everything You Need</h2>
@@ -38,4 +41,6 @@ export const Features = () => (
       </div>
     </div>
   </section>
-);
+));
+
+Features.displayName = "Features";
