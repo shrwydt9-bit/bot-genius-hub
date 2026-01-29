@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Bot, Menu } from "lucide-react";
+import { Brain, Globe, Menu } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import brandIcon from "@/assets/orion-atlas-icon.png";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,9 +23,21 @@ export const Navbar = () => {
       <div className="container flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
-            <Bot className="w-5 h-5 text-primary-foreground" />
+            <img
+              src={brandIcon}
+              alt="Orion Atlas icon"
+              className="w-6 h-6 object-contain"
+              loading="eager"
+              decoding="async"
+            />
           </div>
-          <span className="font-bold text-xl text-gradient">BotForge</span>
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-xl text-gradient">Orion Atlas</span>
+            <span className="hidden sm:inline-flex items-center gap-2 text-muted-foreground">
+              <Brain className="w-4 h-4" aria-hidden="true" />
+              <Globe className="w-4 h-4" aria-hidden="true" />
+            </span>
+          </div>
         </Link>
 
         <div className="hidden md:flex items-center gap-6">
