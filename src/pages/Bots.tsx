@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Navbar } from "@/components/Navbar";
+import { PageShell } from "@/components/layout/PageShell";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -156,16 +157,14 @@ export default function Bots() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <div className="pt-24 pb-16 px-4">
-        <div className="container max-w-6xl">
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-            <h1 className="text-4xl font-bold text-gradient">Bots</h1>
-            <p className="text-muted-foreground">Search, filter, and manage your bots.</p>
-          </motion.div>
+    <PageShell containerClassName="container max-w-6xl">
+      <PageHeader
+        title="Bots"
+        subtitle="Search, filter, deploy, and manage your bots."
+        right={<Button className="gradient-primary" onClick={() => navigate("/create")}>New</Button>}
+      />
 
-          <Card className="border-border/60 mb-6">
+          <Card className="glass-panel glow-border mb-6">
             <CardContent className="pt-6 space-y-4">
               <div className="grid gap-3 lg:grid-cols-3">
                 <div className="lg:col-span-2">
@@ -225,7 +224,7 @@ export default function Bots() {
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           ) : filtered.length === 0 ? (
-            <Card className="border-border/60">
+            <Card className="glass-panel glow-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Bot className="h-5 w-5" />
@@ -243,7 +242,7 @@ export default function Bots() {
                 const depCount = deploymentsByBot?.get(b.id)?.length ?? 0;
                 const latest = deploymentsByBot?.get(b.id)?.[0];
                 return (
-                  <Card key={b.id} className="border-primary/20 hover:border-primary/50 transition-colors">
+                  <Card key={b.id} className="glass-panel glow-border">
                     <CardHeader>
                       <div className="flex items-start justify-between gap-4">
                         <div>
@@ -358,8 +357,6 @@ export default function Bots() {
               })}
             </div>
           )}
-        </div>
-      </div>
-    </div>
+    </PageShell>
   );
 }

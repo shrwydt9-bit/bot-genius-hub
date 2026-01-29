@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { z } from "zod";
-import { Navbar } from "@/components/Navbar";
+import { PageShell } from "@/components/layout/PageShell";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { streamAiChat } from "@/lib/streamAiChat";
-import { Bot, Sparkles, Wand2, Loader2, PlusCircle, Building2, Copy } from "lucide-react";
+import { Bot, Sparkles, Wand2, Loader2, PlusCircle, Building2, Copy, Square, RotateCcw } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -93,6 +94,8 @@ export default function AiChat() {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [sessionToken, setSessionToken] = useState<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const [lastUserPrompt, setLastUserPrompt] = useState<string | null>(null);
   const [messages, setMessages] = useState<Msg[]>([
     {
       role: "assistant",
@@ -108,7 +111,7 @@ export default function AiChat() {
     createBrand: true,
     createCopy: true,
   });
-  const [model, setModel] = useState<ModelOption>("qwen/qwen3-coder:free");
+  const [model, setModel] = useState<ModelOption>("google/gemini-3-flash-preview");
   const [deepThinking, setDeepThinking] = useState(false);
   const [plan, setPlan] = useState<z.infer<typeof planSchema> | null>(null);
 
@@ -144,13 +147,19 @@ export default function AiChat() {
     }
   };
 
-  const send = async () => {
-    if (!input.trim() || !sessionToken || isLoading) return;
-    const userMsg: Msg = { role: "user", content: input.trim() };
+  const send = async (overridePrompt?: string) => {
+    const prompt = (overridePrompt ?? input).trim();
+    if (!prompt || !sessionToken || isLoading) return;
+    const userMsg: Msg = { role: "user", content: prompt };
     setMessages((prev) => [...prev, userMsg]);
+    setLastUserPrompt(prompt);
     setInput("");
     setIsLoading(true);
     setPlan(null);
+
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     let assistantSoFar = "";
     const upsertAssistant = (chunk: string) => {
@@ -170,9 +179,11 @@ export default function AiChat() {
       model,
       deepThinking,
       accessToken: sessionToken,
+      signal: controller.signal,
       onDelta: (delta) => upsertAssistant(delta),
       onDone: () => {
         setIsLoading(false);
+        abortRef.current = null;
         const parsed = tryParsePlan(assistantSoFar);
         setPlan(parsed);
         if (!parsed) {
@@ -184,9 +195,17 @@ export default function AiChat() {
       },
       onError: (err) => {
         setIsLoading(false);
-        toast({ variant: "destructive", title: "AI error", description: err.message });
+        abortRef.current = null;
+        const aborted = (err as any)?.name === "AbortError" || /aborted|abort/i.test(err.message);
+        if (!aborted) toast({ variant: "destructive", title: "AI error", description: err.message });
       },
     });
+  };
+
+  const stop = () => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setIsLoading(false);
   };
 
   const createBrand = async () => {
@@ -258,20 +277,15 @@ export default function AiChat() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <main className="pt-24 pb-16 px-4">
-        <div className="container max-w-6xl">
-          <div className="flex flex-col gap-8 lg:flex-row">
+    <PageShell containerClassName="container max-w-6xl">
+      <div className="flex flex-col gap-8 lg:flex-row">
             <section className="lg:w-2/3 space-y-4">
-              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-2">
-                <h1 className="text-4xl font-bold text-gradient">AI Builder Chat</h1>
-                <p className="text-muted-foreground">
-                  Chat with AI to generate a bot, brand identity, and templates—then create them with one click.
-                </p>
-              </motion.div>
+              <PageHeader
+                title="AI Builder"
+                subtitle="Generate a bot, brand identity, templates, and copy—then create them with one click."
+              />
 
-              <Card className="border-border/60">
+              <Card className="glass-panel glow-border">
                 <CardHeader className="flex-row items-center justify-between">
                   <CardTitle className="text-lg">Conversation</CardTitle>
                   <div className="flex flex-wrap gap-2">
@@ -340,7 +354,7 @@ export default function AiChat() {
                       rows={3}
                     />
                     <div className="flex gap-2">
-                      <Button className="gradient-primary flex-1" disabled={isLoading || !sessionToken} onClick={send}>
+                      <Button className="gradient-primary flex-1" disabled={isLoading || !sessionToken} onClick={() => send()}>
                         {isLoading ? (
                           <>
                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -352,6 +366,22 @@ export default function AiChat() {
                             Send
                           </>
                         )}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        disabled={!isLoading}
+                        onClick={stop}
+                        title="Stop generation"
+                      >
+                        <Square className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        disabled={isLoading || !lastUserPrompt}
+                        onClick={() => lastUserPrompt && send(lastUserPrompt)}
+                        title="Regenerate"
+                      >
+                        <RotateCcw className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="outline"
@@ -369,7 +399,7 @@ export default function AiChat() {
             </section>
 
             <aside className="lg:w-1/3 space-y-4">
-              <Card className="border-border/60">
+              <Card className="glass-panel glow-border">
                 <CardHeader>
                   <CardTitle className="text-lg">Create from Plan</CardTitle>
                 </CardHeader>
@@ -428,7 +458,7 @@ export default function AiChat() {
                 </CardContent>
               </Card>
 
-              <Card className="border-border/60">
+              <Card className="glass-panel glow-border">
                 <CardHeader>
                   <CardTitle className="text-lg">Prompt Starter</CardTitle>
                 </CardHeader>
@@ -444,8 +474,6 @@ export default function AiChat() {
               </Card>
             </aside>
           </div>
-        </div>
-      </main>
-    </div>
+    </PageShell>
   );
 }

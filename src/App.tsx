@@ -14,6 +14,8 @@ import Integrations from "./pages/Integrations";
 import NotFound from "./pages/NotFound";
 import Storefront from "./pages/Storefront";
 import ProductDetail from "./pages/ProductDetail";
+import Analytics from "./pages/Analytics";
+import Create from "./pages/Create";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +32,8 @@ const AppContent = () => {
      <Route path="/templates" element={<ResponseTemplates />} />
       <Route path="/storefront" element={<Storefront />} />
       <Route path="/product/:handle" element={<ProductDetail />} />
+      <Route path="/analytics" element={<Analytics />} />
+      <Route path="/create" element={<Create />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>

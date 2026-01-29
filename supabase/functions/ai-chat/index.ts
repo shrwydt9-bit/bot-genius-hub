@@ -54,7 +54,7 @@ serve(async (req) => {
 
     const messages = Array.isArray(body?.messages) ? body!.messages : [];
     const intent = typeof body?.intent === "object" && body?.intent ? body.intent : {};
-    const model: ModelOption = typeof body?.model === "string" && (body.model === "qwen/qwen3-coder:free" || body.model === "google/gemini-3-flash-preview" || body.model === "google/gemini-2.5-pro" || body.model === "openai/gpt-5.2") ? body.model : "qwen/qwen3-coder:free";
+    const model: ModelOption = typeof body?.model === "string" && (body.model === "qwen/qwen3-coder:free" || body.model === "google/gemini-3-flash-preview" || body.model === "google/gemini-2.5-pro" || body.model === "openai/gpt-5.2") ? body.model : "google/gemini-3-flash-preview";
     const deepThinking = Boolean(body?.deepThinking);
 
     // Basic input validation

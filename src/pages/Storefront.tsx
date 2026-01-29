@@ -1,6 +1,7 @@
  import { useState, useEffect } from "react";
  import { motion } from "framer-motion";
- import { Navbar } from "@/components/Navbar";
+ import { PageShell } from "@/components/layout/PageShell";
+ import { PageHeader } from "@/components/layout/PageHeader";
  import { Button } from "@/components/ui/button";
  import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
  import { Loader2, ShoppingCart, Package } from "lucide-react";
@@ -57,16 +58,8 @@
    };
  
    return (
-     <div className="min-h-screen bg-background">
-       <Navbar />
-       <div className="pt-24 pb-16 px-4">
-         <div className="container">
-           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">
-             <h1 className="text-4xl md:text-6xl font-bold mb-4 text-gradient">Our Store</h1>
-             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-               Discover our amazing products powered by AI
-             </p>
-           </motion.div>
+      <PageShell>
+        <PageHeader title="Storefront" subtitle="A cinematic grid of products with a smooth cart experience." />
  
            {loading ? (
              <div className="flex items-center justify-center py-20">
@@ -92,7 +85,7 @@
                      animate={{ opacity: 1, y: 0 }}
                      transition={{ delay: i * 0.05 }}
                    >
-                     <Card className="h-full flex flex-col border-primary/20 hover:border-primary/50 transition-all cursor-pointer group">
+                      <Card className="h-full flex flex-col glass-panel glow-border transition-all cursor-pointer group">
                        <div onClick={() => navigate(`/product/${product.node.handle}`)}>
                          <CardHeader className="p-0">
                            <div className="aspect-square overflow-hidden rounded-t-lg bg-muted">
@@ -144,9 +137,7 @@
                })}
              </div>
            )}
-         </div>
-       </div>
-     </div>
+      </PageShell>
    );
  };
  

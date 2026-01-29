@@ -1,11 +1,12 @@
 import { motion } from "framer-motion";
 import { CreditCard, ShoppingBag, ShoppingCart } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function HomeEcommerce() {
+  const navigate = useNavigate();
   return (
     <section className="relative py-16 md:py-24">
       <div className="container px-4">
@@ -17,7 +18,7 @@ export function HomeEcommerce() {
         </motion.div>
 
         <div className="mt-10 grid gap-6 md:grid-cols-3">
-          <Card className="border-border/60 bg-card/60 backdrop-blur">
+          <Card className="glass-panel glow-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <ShoppingBag className="h-5 w-5" aria-hidden="true" />
@@ -29,7 +30,7 @@ export function HomeEcommerce() {
             </CardContent>
           </Card>
 
-          <Card className="border-border/60 bg-card/60 backdrop-blur">
+          <Card className="glass-panel glow-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <ShoppingCart className="h-5 w-5" aria-hidden="true" />
@@ -41,7 +42,7 @@ export function HomeEcommerce() {
             </CardContent>
           </Card>
 
-          <Card className="border-border/60 bg-card/60 backdrop-blur">
+          <Card className="glass-panel glow-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CreditCard className="h-5 w-5" aria-hidden="true" />
@@ -55,15 +56,9 @@ export function HomeEcommerce() {
         </div>
 
         <div className="mt-10 flex flex-wrap items-center gap-3">
-          <Button asChild className="gradient-primary">
-            <Link to="/storefront">Open storefront</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link to="/integrations">Set up integrations</Link>
-          </Button>
-          <Button asChild variant="ghost">
-            <Link to="/ai-chat">Build an e-commerce bot</Link>
-          </Button>
+          <Button className="gradient-primary" onClick={() => navigate("/storefront")}>Open storefront</Button>
+          <Button variant="outline" onClick={() => navigate("/integrations")}>Set up integrations</Button>
+          <Button variant="ghost" onClick={() => navigate("/ai-chat")}>Build an e-commerce bot</Button>
         </div>
       </div>
     </section>

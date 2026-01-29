@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Navbar } from "@/components/Navbar";
+import { PageShell } from "@/components/layout/PageShell";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -143,24 +144,19 @@ export default function Integrations() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+    <PageShell containerClassName="container max-w-5xl">
+      <PageHeader
+        title="Integrations"
+        subtitle="Connect channels securely; this page only shows status (never secrets)."
+        right={
+          <Button variant="outline" onClick={refreshStatus} disabled={isLoadingStatus}>
+            {isLoadingStatus ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-2" />}
+            Refresh
+          </Button>
+        }
+      />
 
-      <main className="pt-24 pb-16 px-4">
-        <div className="container max-w-5xl">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between mb-8">
-            <div>
-              <h1 className="text-4xl font-bold text-gradient">Integrations</h1>
-              <p className="text-muted-foreground">Connect WhatsApp and Telegram. We’ll only show connection status here.</p>
-            </div>
-
-            <Button variant="outline" onClick={refreshStatus} disabled={isLoadingStatus}>
-              {isLoadingStatus ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-2" />}
-              Refresh
-            </Button>
-          </div>
-
-          <Card className="border-border/60 mb-6">
+          <Card className="glass-panel glow-border mb-6">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 Status
@@ -200,7 +196,7 @@ export default function Integrations() {
             </TabsList>
 
             <TabsContent value="whatsapp" className="mt-6">
-              <Card className="border-border/60">
+              <Card className="glass-panel glow-border">
                 <CardHeader>
                   <CardTitle>WhatsApp</CardTitle>
                   <CardDescription>
@@ -304,7 +300,7 @@ export default function Integrations() {
             </TabsContent>
 
             <TabsContent value="telegram" className="mt-6">
-              <Card className="border-border/60">
+              <Card className="glass-panel glow-border">
                 <CardHeader>
                   <CardTitle>Telegram</CardTitle>
                   <CardDescription>Save your bot token and verify it via Telegram’s getMe endpoint.</CardDescription>
@@ -368,8 +364,6 @@ export default function Integrations() {
               </Card>
             </TabsContent>
           </Tabs>
-        </div>
-      </main>
-    </div>
+    </PageShell>
   );
 }

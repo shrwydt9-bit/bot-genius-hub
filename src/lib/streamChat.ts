@@ -7,6 +7,7 @@ export async function streamChat({
   botId,
   model,
   deepThinking,
+  signal,
   onDelta,
   onDone,
   onError,
@@ -15,6 +16,7 @@ export async function streamChat({
   botId: string;
   model?: ModelOption;
   deepThinking?: boolean;
+  signal?: AbortSignal;
   onDelta: (deltaText: string) => void;
   onDone: () => void;
   onError: (error: Error) => void;
@@ -29,6 +31,7 @@ export async function streamChat({
         Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
       },
       body: JSON.stringify({ messages, botId, model, deepThinking }),
+      signal,
     });
 
     if (!response.ok || !response.body) {

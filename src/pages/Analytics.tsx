@@ -1,6 +1,6 @@
  import { useState, useEffect, useCallback } from "react";
  import { useNavigate, useSearchParams } from "react-router-dom";
- import { Navbar } from "@/components/Navbar";
+ import { PageShell } from "@/components/layout/PageShell";
  import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
  import { Button } from "@/components/ui/button";
  import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -143,20 +143,16 @@
  
    if (!bot) {
      return (
-       <div className="min-h-screen bg-background">
-         <Navbar />
-         <div className="pt-20 flex items-center justify-center">
+        <PageShell>
+          <div className="flex items-center justify-center py-24">
            <p className="text-muted-foreground">Loading...</p>
          </div>
-       </div>
+        </PageShell>
      );
    }
  
-   return (
-     <div className="min-h-screen bg-background">
-       <Navbar />
-       <div className="pt-20 pb-16 px-4">
-         <div className="container max-w-7xl">
+    return (
+      <PageShell containerClassName="container max-w-7xl">
            <div className="flex items-center gap-4 mb-6">
              <Button variant="ghost" size="icon" onClick={() => navigate("/platforms")}>
                <ArrowLeft className="w-5 h-5" />
@@ -534,9 +530,7 @@
                </Card>
              </TabsContent>
            </Tabs>
-         </div>
-       </div>
-     </div>
+      </PageShell>
    );
  };
  

@@ -1,23 +1,28 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { PageShell } from "@/components/layout/PageShell";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const NotFound = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-muted-foreground">Oops! Page not found</p>
-        <a href="/" className="text-primary underline hover:text-primary/90">
-          Return to Home
-        </a>
+    <PageShell containerClassName="container max-w-xl">
+      <div className="glass-panel glow-border rounded-2xl p-10 text-center">
+        <h1 className="text-5xl font-extrabold tracking-tight">404</h1>
+        <p className="mt-3 text-muted-foreground">That route doesn’t exist: {location.pathname}</p>
+        <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+          <Button className="gradient-primary" onClick={() => navigate("/")}>Home</Button>
+          <Button variant="outline" onClick={() => navigate("/create")}>Orion Studio</Button>
+        </div>
       </div>
-    </div>
+    </PageShell>
   );
 };
 

@@ -1,6 +1,6 @@
  import { useState } from "react";
  import { motion } from "framer-motion";
- import { Navbar } from "@/components/Navbar";
+  import { PageShell } from "@/components/layout/PageShell";
  import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
  import { Button } from "@/components/ui/button";
  import { Input } from "@/components/ui/input";
@@ -186,12 +186,9 @@
      setIsCreateOpen(true);
    };
 
-   return (
-     <div className="min-h-screen bg-background">
-       <Navbar />
-       <div className="pt-24 pb-16 px-4">
-         <div className="container max-w-6xl">
-           <motion.div
+    return (
+      <PageShell containerClassName="container max-w-6xl">
+            <motion.div
              initial={{ opacity: 0, y: 20 }}
              animate={{ opacity: 1, y: 0 }}
              className="flex justify-between items-center mb-8"
@@ -208,7 +205,7 @@
                      AI Suggestions
                    </Button>
                  </DialogTrigger>
-                 <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                  <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto glass-panel">
                    <DialogHeader>
                      <DialogTitle className="flex items-center gap-2">
                        <Sparkles className="w-5 h-5 text-primary" />
@@ -307,7 +304,7 @@
                        </div>
                        <div className="grid gap-3">
                          {aiSuggestions.map((suggestion, idx) => (
-                           <Card key={idx} className="hover:border-primary transition-colors">
+                            <Card key={idx} className="glass-panel glow-border">
                              <CardHeader>
                                <div className="flex justify-between items-start">
                                  <div>
@@ -354,7 +351,7 @@
                    Create Template
                  </Button>
                </DialogTrigger>
-               <DialogContent className="max-w-2xl">
+                <DialogContent className="max-w-2xl glass-panel">
                  <DialogHeader>
                    <DialogTitle>Create Response Template</DialogTitle>
                    <DialogDescription>
@@ -443,7 +440,7 @@
                    animate={{ opacity: 1, y: 0 }}
                    transition={{ delay: i * 0.05 }}
                  >
-                   <Card>
+                    <Card className="glass-panel glow-border">
                      <CardHeader>
                        <div className="flex justify-between items-start">
                          <div>
@@ -539,9 +536,7 @@
                ))}
              </div>
            )}
-         </div>
-       </div>
-     </div>
+      </PageShell>
    );
  };
  

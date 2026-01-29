@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Navbar } from "@/components/Navbar";
+import { PageShell } from "@/components/layout/PageShell";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { BotChatInterface } from "@/components/BotChatInterface";
 import { BotPreview } from "@/components/BotPreview";
  import { AiCopywritingPanel } from "@/components/AiCopywritingPanel";
 import { Button } from "@/components/ui/button";
- import { ArrowLeft, Save, Sparkles } from "lucide-react";
+ import { Save, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
  import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -155,27 +156,20 @@ const Customize = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <div className="pt-20 pb-8 px-4">
-        <div className="container">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" onClick={() => navigate("/platforms")}>
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
-              <div>
-                <h1 className="text-3xl font-bold text-gradient">Customize Your Bot</h1>
-                <p className="text-muted-foreground">Chat with AI to modify your bot's behavior</p>
-              </div>
-            </div>
+    <PageShell>
+      <div className="container">
+        <PageHeader
+          title="Customize"
+          subtitle="Studio view: iterate with AI and preview your bot instantly."
+          right={
             <Button onClick={handleSave} className="gradient-primary">
               <Save className="w-4 h-4 mr-2" />
               Save Bot
             </Button>
-          </div>
+          }
+        />
 
-         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-18rem)]">
+         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
            <div className="lg:col-span-2 space-y-4">
              <Tabs value={activeView} onValueChange={(v) => setActiveView(v as "chat" | "ai")}>
                <TabsList className="grid w-full grid-cols-2">
@@ -188,8 +182,8 @@ const Customize = () => {
                  </TabsTrigger>
                </TabsList>
 
-               <TabsContent value="chat" className="mt-4 h-[calc(100vh-24rem)]">
-              <div className="h-full border border-border rounded-lg bg-card">
+                <TabsContent value="chat" className="mt-4">
+              <div className="border border-border rounded-lg glass-panel">
                 {isCreating ? (
                   <div className="h-full flex items-center justify-center">
                     <p className="text-muted-foreground">Creating your bot...</p>
@@ -207,7 +201,7 @@ const Customize = () => {
               </div>
                </TabsContent>
 
-               <TabsContent value="ai" className="mt-4 h-[calc(100vh-24rem)]">
+                <TabsContent value="ai" className="mt-4">
                  <div className="h-full overflow-y-auto">
                    {botId ? (
                      <AiCopywritingPanel
@@ -227,17 +221,18 @@ const Customize = () => {
             </div>
 
             <div className="lg:col-span-1">
-              <BotPreview
-                botName={botData.name}
-                personality={botData.personality}
-                greetingMessage={botData.greetingMessage}
-                platform={botData.platform}
-              />
+              <div className="glass-panel glow-border rounded-lg">
+                <BotPreview
+                  botName={botData.name}
+                  personality={botData.personality}
+                  greetingMessage={botData.greetingMessage}
+                  platform={botData.platform}
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+    </PageShell>
   );
 };
 

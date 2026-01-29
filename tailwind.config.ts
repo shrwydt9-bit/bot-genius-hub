@@ -68,6 +68,19 @@ export default {
           "0%, 100%": { transform: "translateY(0px)" },
           "50%": { transform: "translateY(-20px)" }
         },
+        "orion-drift": {
+          "0%": { transform: "translate3d(-2%, -1%, 0)" },
+          "50%": { transform: "translate3d(2%, 1%, 0)" },
+          "100%": { transform: "translate3d(-2%, -1%, 0)" },
+        },
+        "orion-glow": {
+          "0%, 100%": { opacity: "0.55", transform: "scale(1)" },
+          "50%": { opacity: "0.85", transform: "scale(1.04)" },
+        },
+        "shimmer": {
+          "0%": { backgroundPosition: "0% 0%" },
+          "100%": { backgroundPosition: "200% 0%" },
+        },
         "accordion-down": {
           from: {
             height: "0",
@@ -86,6 +99,9 @@ export default {
         },
       },
       animation: {
+        "orion-drift": "orion-drift 16s ease-in-out infinite",
+        "orion-glow": "orion-glow 7s ease-in-out infinite",
+        "shimmer": "shimmer 2.2s linear infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },

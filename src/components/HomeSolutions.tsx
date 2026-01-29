@@ -1,11 +1,12 @@
 import { motion } from "framer-motion";
 import { Bot, LayoutPanelTop, Sparkles } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function HomeSolutions() {
+  const navigate = useNavigate();
   return (
     <section className="relative py-16 md:py-24">
       <div className="container px-4">
@@ -17,7 +18,7 @@ export function HomeSolutions() {
         </motion.div>
 
         <div className="mt-10 grid gap-6 md:grid-cols-3">
-          <Card className="border-border/60 bg-card/60 backdrop-blur">
+          <Card className="glass-panel glow-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Bot className="h-5 w-5" aria-hidden="true" />
@@ -29,7 +30,7 @@ export function HomeSolutions() {
             </CardContent>
           </Card>
 
-          <Card className="border-border/60 bg-card/60 backdrop-blur">
+          <Card className="glass-panel glow-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <LayoutPanelTop className="h-5 w-5" aria-hidden="true" />
@@ -41,7 +42,7 @@ export function HomeSolutions() {
             </CardContent>
           </Card>
 
-          <Card className="border-border/60 bg-card/60 backdrop-blur">
+          <Card className="glass-panel glow-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5" aria-hidden="true" />
@@ -55,15 +56,9 @@ export function HomeSolutions() {
         </div>
 
         <div className="mt-10 flex flex-wrap items-center gap-3">
-          <Button asChild className="gradient-primary">
-            <Link to="/ai-chat">Create a bot</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link to="/bots">Manage bots</Link>
-          </Button>
-          <Button asChild variant="ghost">
-            <Link to="/templates">Browse templates</Link>
-          </Button>
+          <Button className="gradient-primary" onClick={() => navigate("/ai-chat")}>Create a bot</Button>
+          <Button variant="outline" onClick={() => navigate("/bots")}>Manage bots</Button>
+          <Button variant="ghost" onClick={() => navigate("/templates")}>Browse templates</Button>
         </div>
       </div>
     </section>

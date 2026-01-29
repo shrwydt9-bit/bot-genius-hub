@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
-import { Navbar } from "@/components/Navbar";
+import { PageShell } from "@/components/layout/PageShell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -83,12 +83,12 @@ export default function Auth() {
           });
         }, 0);
 
-        navigate("/", { replace: true });
+        navigate("/create", { replace: true });
       }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) navigate("/", { replace: true });
+      if (session?.user) navigate("/create", { replace: true });
     });
 
     return () => data.subscription.unsubscribe();
@@ -168,26 +168,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
-      <main className="relative pt-24 pb-16 px-4">
-        {/* Ambient background */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <motion.div
-            className="absolute -top-24 left-1/2 h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-primary/20 blur-3xl"
-            animate={{ y: [0, 18, 0], scale: [1, 1.06, 1] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.div
-            className="absolute -bottom-24 right-[-6rem] h-[26rem] w-[26rem] rounded-full bg-secondary/20 blur-3xl"
-            animate={{ y: [0, -16, 0], scale: [1, 1.08, 1] }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-background" />
-        </div>
-
-        <div className="container relative">
+    <PageShell>
           <div className="mx-auto grid max-w-5xl grid-cols-1 gap-10 lg:grid-cols-2 items-center">
             <section className="space-y-6">
               <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card/50 px-3 py-1 text-sm text-muted-foreground">
@@ -351,8 +332,6 @@ export default function Auth() {
               </Card>
             </section>
           </div>
-        </div>
-      </main>
-    </div>
+    </PageShell>
   );
 }
