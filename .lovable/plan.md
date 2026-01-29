@@ -1,134 +1,291 @@
 
-Goals
-- Update social previews: replace current OpenGraph/Twitter image with Orion Atlas branded images (banner + square).
-- Improve navigation UX: add a global Back button in the Navbar (on all pages except Home).
-- Refresh Home page design: add new sections for “Bots + Websites”, “E-commerce”, and “Everything else”, with clear CTAs into the product.
-- Minor consistency fixes: ensure Orion Atlas name appears consistently (ex: Auth page currently says “BotForge”).
+Goal
+- Make Orion Atlas feel “cinematic”: distinctive, modern, consistent, and high-end across every page.
+- Upgrade the AI experience so it’s noticeably more capable, more reliable, and easier to use to create bots, storefronts, templates, and “everything else”.
+- Add practical testing (automated where possible + a clear manual QA checklist) to confirm nothing breaks.
 
-Scope decisions (based on your answers)
-- OpenGraph/Twitter meta tags will use relative URLs (ex: /og-image.png).
-- Back button will be global in Navbar (with history back; fallback to Home).
-- Home page will include all 3 new sections now.
-- We will generate both social images (banner + square), and use the banner as the primary OG/Twitter image.
+What I found in your codebase (important context)
+- The UI is already using Tailwind + shadcn/ui + Framer Motion, with a dark theme + gradient utilities (`gradient-primary`, `text-gradient`) defined in `src/index.css`.
+- Each page renders `<Navbar />` and then its own layout. The styling quality varies per page, and many pages have repeated “page header” patterns.
+- You already have AI streaming on:
+  - `/ai-chat` (AI builder) via `supabase/functions/ai-chat`
+  - bot customization chat via `supabase/functions/bot-chat`
+- AI currently enforces “final JSON in a fenced block” (client tries to parse it). This is functional but brittle.
+- The home page now has the requested sections (Bots+Websites, E-commerce, Everything else), but the overall “cinematic” vibe isn’t applied globally.
 
-Implementation plan
+Scope (what will change)
+1) Global Design System Upgrade (cinematic theme)
+2) Page-by-page polish using shared layout building blocks (so everything looks consistent)
+3) Stronger “Create” flows (bots / storefront / templates / integrations) so the product feels like a cohesive studio
+4) AI upgrades (better default model, better structure, more reliable outputs, more power features)
+5) Testing and verification (Vitest + manual QA runbook)
 
-1) Create new brand social assets (banner + square)
-- Generate two images:
-  - Banner: 1200×630 (social preview standard). Background: matching site gradient, Orion Atlas icon, short tagline.
-  - Square: 1024×1024 (re-usable logo tile; can be used for other meta tags later).
-- Add them to the project’s public assets so they’re available at:
-  - /og-image.png (banner)
-  - /og-square.png (square)
-- Ensure safe margins so the logo/text isn’t cropped in link unfurls.
+Non-goals (to keep this controlled)
+- No backend business logic changes to Shopify beyond UI/UX polish (we won’t change your Shopify token/domain wiring in this pass).
+- No new paid AI provider setup; we’ll keep your current hybrid approach (Lovable AI Gateway for Gemini/GPT + OpenRouter for Qwen) but improve how it’s used.
 
-2) Update index.html OpenGraph + Twitter meta tags
-- Replace existing og:image/twitter:image URLs with the new banner:
-  - og:image = /og-image.png
-  - twitter:image = /og-image.png
-- Add recommended metadata for better rendering:
-  - og:image:width = 1200
-  - og:image:height = 630
-  - og:image:alt = “Orion Atlas”
-  - twitter:card already set to summary_large_image (keep)
-- Keep title/description already aligned with Orion Atlas.
+Phase 1 — Cinematic design foundation (global)
+A) Introduce a shared “App Shell” / “Page Shell”
+- Create a reusable layout wrapper that every page uses:
+  - Consistent top padding (navbar offset)
+  - Max-width container rules
+  - Shared background “cinematic layers”
+  - Shared page header pattern (title, subtitle, optional actions)
+- This removes repeated boilerplate and guarantees consistency.
 
-3) Add a global Back button in Navbar
-- Update src/components/Navbar.tsx:
-  - Detect current route via useLocation().
-  - If not on “/”, render a small back button (ArrowLeft) before the brand mark.
-  - On click:
-    - If browser history length suggests there is a page to go back to, navigate(-1).
-    - Otherwise navigate("/") as a fallback.
-- Ensure this works on:
-  - Desktop navbar
-  - Mobile sheet menu layout (back button stays in top bar; sheet still works)
+B) Cinematic background system (reusable, performant)
+- Add an `OrionBackground` component:
+  - Gradient mesh base
+  - Subtle animated “nebula blobs” (Framer Motion or CSS keyframes)
+  - Light “starfield” or particle layer (very low CPU: static star dots + slow drift)
+  - Optional subtle noise overlay (CSS background image pattern or lightweight SVG)
+- Add “glass” surfaces for cards:
+  - Slight transparency + backdrop-blur
+  - Consistent border highlights and hover glow
 
-4) Home page redesign: add 3 new sections (Bots+Websites, E-commerce, Everything else)
-A) Create new section components (to keep Index.tsx clean)
-- Create components under src/components/, for example:
-  - HomeSolutions.tsx (Bots + Websites section)
-  - HomeEcommerce.tsx (E-commerce section)
-  - HomeMore.tsx (Everything else section)
-- Each section will:
-  - Use the existing visual language (motion + cards + gradients).
-  - Provide 2–3 “feature cards” with an icon, title, and short description.
-  - Include clear CTA buttons.
+C) Expand Tailwind animation utilities (so cinematic effects are everywhere)
+- Extend `tailwind.config.ts` animations to include:
+  - fade-in / fade-out
+  - scale-in / scale-out
+  - slide-in-right / slide-out-right
+  - gentle float / shimmer / glow pulse
+- Add utility classes in `src/index.css`:
+  - `.glass-panel`, `.glow-border`, `.orion-grid`, `.orion-noise`, `.cinematic-shadow`
+  - A consistent “interactive hover” standard across all cards/buttons
 
-B) Wire sections into src/pages/Index.tsx with anchor IDs
-- Update Index.tsx to include:
-  - <div id="solutions">…Bots + Websites…</div>
-  - <div id="ecommerce">…E-commerce…</div>
-  - <div id="more">…Everything else…</div>
-- Keep existing sections (Hero, Features, PlatformGrid) but reorder for a stronger story:
-  - Hero
-  - Solutions (Bots + Websites)
-  - E-commerce
-  - Features
-  - Deploy Everywhere (PlatformGrid)
-  - Everything else
-- Add a final CTA strip at the bottom (optional but recommended): “Start building with Orion Atlas” with buttons to /ai-chat and /platforms.
+D) Consistent typography + spacing scale
+- Normalize page titles (H1), section titles (H2), and subtitles across all pages.
+- Standardize card spacing and grid breakpoints for a “premium” look.
 
-C) Define CTAs to existing pages (no dead ends)
-- Bots + Websites section CTAs:
-  - “Create a bot” → /ai-chat or /platforms
-  - “Manage bots” → /bots
-  - “Templates” → /templates
-  - If “Websites” implies storefront/landing pages: link to /storefront (see step 5) or to an explanation section.
-- E-commerce section CTAs:
-  - “Open Storefront” → /storefront
-  - “E-commerce bot” → /ai-chat (with suggested prompt helper text in UI later)
-  - Optional: link to Integrations if Shopify setup is required.
-- Everything else section CTAs:
-  - “Integrations” → /integrations
-  - “AI Chat” → /ai-chat
-  - “Templates” → /templates
-  - (If Analytics page exists and is routed, add; currently src/pages/Analytics.tsx exists but is not routed.)
+Files involved (Phase 1)
+- `tailwind.config.ts` (new keyframes/animations)
+- `src/index.css` (new reusable classes for glass/glow/noise)
+- New reusable components (planned):
+  - `src/components/layout/PageShell.tsx`
+  - `src/components/layout/PageHeader.tsx`
+  - `src/components/visual/OrionBackground.tsx`
 
-5) Ensure E-commerce routes exist (so Home CTAs work)
-- Update src/App.tsx to include routes for:
-  - /storefront → src/pages/Storefront.tsx
-  - /product/:handle → src/pages/ProductDetail.tsx
-- Verify Navbar has an “E-commerce” link (either anchor on Home or direct /storefront). Recommended:
-  - Add “E-commerce” to navbar as “/#ecommerce” (for marketing section) AND optionally a “Storefront” item (direct) if you want it prominent.
+Phase 2 — Navbar & navigation feel “premium”
+A) Navbar polish
+- Keep your global back button, but refine behavior:
+  - Only show “Back” if not on `/`
+  - Improve fallback logic: if history length is small OR previous route is external, go to `/`
+  - Add a subtle “active state” for current route
+  - Improve mobile sheet styling (glass panel + animated entrance)
+- Improve anchor navigation:
+  - When clicking “/#section”, smooth scroll if already on home
+  - If not on home, navigate to home then smooth scroll after route transition
 
-6) Fix remaining “BotForge” branding leakage
-- Update src/pages/Auth.tsx:
-  - Replace “Welcome to BotForge” with “Welcome to Orion Atlas”.
-  - Ensure any other mentions of BotForge are removed.
-- Quick scan for “BotForge” occurrences and replace with Orion Atlas where user-facing.
+B) Primary CTA behavior (Get Started)
+- Make “Get Started” actually route to the best next step:
+  - If not signed in → `/auth`
+  - If signed in → new “Create” hub (see Phase 3)
 
-7) QA checklist (end-to-end)
-- Social preview:
-  - Confirm index.html references new images.
-  - Confirm images exist in public and load at /og-image.png and /og-square.png in preview.
+Files involved (Phase 2)
+- `src/components/Navbar.tsx`
+- Potential small hook helper:
+  - `src/hooks/useSmoothHashScroll.ts` (or equivalent)
+
+Phase 3 — Make “Create bots, stores, and everything else” feel like a studio
+A) Add a “Create Hub” page (central command)
+- New route: `/create`
+- 3 big cinematic tiles/cards:
+  1) Create a Bot (→ `/ai-chat` or `/platforms`)
+  2) Create a Storefront (→ `/storefront`)
+  3) Create Templates + Copy (→ `/templates`)
+  4) (Optional tile) Connect Integrations (→ `/integrations`)
+- Each tile:
+  - Micro-animations on hover (glow + slight parallax)
+  - “What you’ll get” bullet list
+  - One clear CTA
+
+B) Improve onboarding flow
+- After sign-in, route to `/create` (instead of always `/`)
+- Home page remains marketing; `/create` becomes product entry for building.
+
+C) Update Home page sections to match the new studio
+- Add stronger CTAs:
+  - “Open Orion Studio” → `/create`
+  - “AI Builder” → `/ai-chat`
+  - “Storefront” → `/storefront`
+- Add subtle cinematic section separators (gradient divider lines, animated accent)
+
+Files involved (Phase 3)
+- `src/App.tsx` (add `/create` route)
+- New page:
+  - `src/pages/Create.tsx`
+- `src/pages/Index.tsx` + Home section components polish (existing)
+- `src/pages/Auth.tsx` redirect destination update after login
+
+Phase 4 — Page-by-page redesign pass (consistent, modern, cinematic)
+We’ll apply PageShell/PageHeader + cinematic background everywhere, then improve each page’s UX:
+
+A) `/auth`
+- Keep the current layout (it’s already strong), but:
+  - Ensure perfect consistency with the new global background and glass panels
+  - Improve button hierarchy and loading feedback micro-interactions
+  - Add a “Why Orion Atlas” mini section (short, premium, not noisy)
+
+B) `/platforms`
+- Convert platform cards into a premium “select and continue” flow:
+  - Make “Get Started” actually navigate to `/customize?platform=...` (currently it’s a button with no action)
+  - Add filters/search by category
+  - Improve card visuals: glow border, consistent icon tiles, hover lift, reveal animation
+
+C) `/bots`
+- Make it feel like a dashboard:
+  - Better empty state with “Create bot” + “Import template”
+  - Improve deployment dialog visuals and copy
+  - Add clear “Next step” actions prevents confusion (Customize, Deploy, Analytics)
+
+D) `/customize`
+- Remove duplicate back button (you already have global back in navbar; the per-page ArrowLeft can be removed or repurposed)
+- Upgrade to a “studio layout”:
+  - Left: chat + AI tools tabs
+  - Right: preview panel in a glass frame
+  - Add top summary chips (platform, bot type, last saved)
+  - Add better save states (saving… / saved / error)
+
+E) `/templates`
+- Improve template editor UX:
+  - Better preview modal styling
+  - Variable chips + quick fill
+  - More premium dialog layout and animation
+  - Add “Generate with AI” as a first-class experience (not hidden)
+
+F) `/integrations`
+- Improve clarity and reduce anxiety:
+  - Step-by-step “Connect → Verify → Deploy”
+  - Better status visualization (timeline style)
+  - More cinematic cards but calm, enterprise feel
+
+G) `/storefront` + `/product/:handle`
+- Upgrade storefront visuals:
+  - Add category-like filtering (even if it’s simple)
+  - Add product skeleton loading
+  - Improve product cards (image hover zoom is good; we’ll add consistent overlays and better spacing)
+  - Ensure cart interactions feel premium (drawer transitions, empty state)
+
+H) `/analytics` (exists but not routed)
+- Add route `/analytics` and a per-bot “View analytics” CTA from bots list.
+- Apply design system and improve readability of charts with consistent card styling.
+- Keep charts but refine layout and empty states.
+
+Files involved (Phase 4)
+- `src/pages/Platforms.tsx`
+- `src/pages/Bots.tsx`
+- `src/pages/Customize.tsx`
+- `src/pages/ResponseTemplates.tsx`
+- `src/pages/Integrations.tsx`
+- `src/pages/Storefront.tsx`
+- `src/pages/ProductDetail.tsx`
+- `src/pages/Analytics.tsx`
+- `src/App.tsx` (add `/analytics`)
+- Shared layout components introduced in Phase 1
+
+Phase 5 — Make AI “more powerful” (practical upgrades)
+A) Better default model + clearer intent routing
+- Default AI Builder model should be a strong generalist:
+  - Switch default from `qwen/qwen3-coder:free` to `google/gemini-3-flash-preview` (fast, high quality)
+  - Keep Qwen as an option
+
+B) Increase reliability of structured outputs
+Right now the AI is told to print JSON in a fenced block, and the client tries to parse it.
+Upgrade this to be more robust:
+- For Lovable AI Gateway models (Gemini/GPT):
+  - Use tool calling (function schema) in the edge function so we get guaranteed structured output (no broken JSON).
+- For OpenRouter Qwen:
+  - Keep the “final fenced JSON” approach, but improve:
+    - Add server-side validation and auto-repair attempt if JSON is malformed
+    - Always end stream with a clean final JSON block
+
+C) “Orion Atlas Builder” prompt improvements
+- Strengthen system prompt to:
+  - Ask at most 1 clarifying question only when absolutely needed
+  - Produce: short plan + outputs
+  - Generate higher quality templates (more realistic, better variables, better tone)
+  - Add “website/storefront suggestions” when user intent is e-commerce or “website”
+
+D) UX upgrades in AI Chat UI
+- Add:
+  - Stop/Cancel generation (AbortController)
+  - Regenerate last response
+  - “Use plan” flow improvements: show plan summary cards (Bot / Brand / Templates / Copy)
+  - Model description tooltip (“fast / best quality / cheapest”)
+  - Stronger error surfaces (402/429) with actionable messages
+
+E) Make bot customization chat smarter (bot-chat)
+- Pull more bot context:
+  - bot_type, platform, response templates (if available), brand (if linked)
+- Improve system prompt so the assistant:
+  - Suggests changes that match the platform (WhatsApp vs Telegram)
+  - Uses templates when available
+  - Produces “diff-style” updates when modifying personality/greeting (so it’s easier to review)
+
+Files involved (Phase 5)
+- `src/pages/AiChat.tsx` (UX upgrades, new controls, better plan rendering)
+- `src/lib/streamAiChat.ts` (AbortController support, error handling improvements)
+- `supabase/functions/ai-chat/index.ts` (tool calling for structured output when supported; better validation)
+- `src/components/BotChatInterface.tsx` (similar UX improvements if needed)
+- `src/lib/streamChat.ts` (AbortController support)
+- `supabase/functions/bot-chat/index.ts` (more context, better prompt)
+
+Phase 6 — Testing & “verify everything works”
+A) Automated tests (Vitest + Testing Library)
+Add/expand tests to cover critical UI interactions:
 - Navbar:
-  - Back button appears on all non-home pages.
-  - Back button works even when first entry is direct link (falls back to Home).
-  - Mobile menu still opens/closes normally.
-- Home page:
-  - Navbar anchor links scroll to the correct sections (solutions/ecommerce/more/features/platforms).
-  - All CTAs navigate to valid routes (no 404).
-- E-commerce:
-  - /storefront and /product/:handle routes load (even if Shopify data isn’t configured, the pages should render and show error states gracefully).
+  - Back button renders on non-home routes
+  - Clicking back falls back to home when history is shallow
+- Routing:
+  - `/create`, `/storefront`, `/templates`, `/ai-chat` render without crashing
+- AI utilities:
+  - “extractVariables” behavior
+  - JSON plan parsing behavior (unit-level)
 
-Technical notes / risks
-- Social platforms cache OG images aggressively; after publishing, you may need to “force re-scrape” using platform tools (Facebook Sharing Debugger, etc.).
-- Relative OG image URLs are fine once your site is publicly accessible; they won’t work correctly if the URL isn’t reachable by the crawler.
-- Shopify storefront token/domain are currently hardcoded in src/lib/shopify.ts; this is not part of your request, but for production we should move those to environment variables later.
+Files involved
+- `src/test/` new tests, e.g.:
+  - `src/components/Navbar.test.tsx`
+  - `src/pages/Create.test.tsx`
+  - small utility tests
 
-Files expected to change (implementation phase)
-- index.html (OG/Twitter meta tags)
-- public/og-image.png (new)
-- public/og-square.png (new)
-- src/components/Navbar.tsx (global back button + nav updates)
-- src/pages/Index.tsx (new sections + layout)
-- src/components/(new Home sections).tsx (new)
-- src/App.tsx (add Storefront + ProductDetail routes)
-- src/pages/Auth.tsx (BotForge → Orion Atlas text)
+B) Manual QA checklist (run end-to-end in preview)
+We’ll follow a click-by-click checklist:
+1) Auth:
+   - Sign in, sign up, Google sign-in (if configured), redirect works
+2) Create hub:
+   - All CTAs route correctly
+3) AI Chat:
+   - Send prompt, stop generation, regenerate, create bot/templates works
+4) Bots:
+   - List loads, customize works, deploy dialog works, delete works
+5) Customize:
+   - Chat works, save works, preview updates
+6) Templates:
+   - Create template, preview template, AI suggestions flow works
+7) Integrations:
+   - Status refresh works, save works, verify works
+8) Storefront:
+   - Products load, product detail loads, add to cart works
+
+Dependencies / sequencing
+- Must implement Phase 1 first (design foundation) because all other page work depends on it.
+- AI structured output improvements should be staged:
+  1) UI improvements (cancel/regenerate)
+  2) Edge function tool calling + validation
+  3) Better prompts/context
+
+Risks & mitigations
+- Performance risk from heavy animations:
+  - Use subtle, low-layer backgrounds; avoid many moving particles.
+  - Respect “prefers-reduced-motion”.
+- Social/OG images caching:
+  - Already handled; unrelated to this pass.
+- AI tool calling compatibility:
+  - Use tool calling only where supported (Lovable AI Gateway models), fallback gracefully for OpenRouter.
 
 Definition of done
-- Sharing the site shows Orion Atlas branded social preview image (banner).
-- Home page has the requested sections and looks cohesive with current theme.
-- Users can navigate forward/back smoothly; back button is always available off Home.
-- E-commerce links work (storefront + product detail routes accessible).
+- Every page shares a cohesive cinematic theme (background, typography, spacing, card style).
+- Navigation feels premium and consistent (anchors smooth scroll, back button behavior is reliable).
+- There is a clear “Create” entry point for bots, storefront, templates, and integrations.
+- AI Chat is more capable and easier to use (stop/regenerate, more reliable structured outputs).
+- A clear test suite + manual QA checklist exists and is executed in preview without major issues.
