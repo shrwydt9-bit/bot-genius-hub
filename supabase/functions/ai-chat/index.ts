@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.91.1";
+import { createOpenRouterClient, streamChatCompletion } from "../_shared/openrouter.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -7,7 +8,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-type ChatMessage = { role: "user" | "assistant"; content: string };
+type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
 
 const intentSchema = {
   type: "object",
@@ -19,6 +20,8 @@ const intentSchema = {
   },
   additionalProperties: false,
 } as const;
+
+type ModelOption = "qwen/qwen3-coder:free" | "google/gemini-3-flash-preview" | "google/gemini-2.5-pro" | "openai/gpt-5.2";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -46,11 +49,13 @@ serve(async (req) => {
     }
 
     const body = await req.json().catch(() => null) as
-      | { messages?: ChatMessage[]; intent?: Record<string, unknown> }
+      | { messages?: ChatMessage[]; intent?: Record<string, unknown>; model?: unknown; deepThinking?: unknown }
       | null;
 
     const messages = Array.isArray(body?.messages) ? body!.messages : [];
     const intent = typeof body?.intent === "object" && body?.intent ? body.intent : {};
+    const model: ModelOption = typeof body?.model === "string" && (body.model === "qwen/qwen3-coder:free" || body.model === "google/gemini-3-flash-preview" || body.model === "google/gemini-2.5-pro" || body.model === "openai/gpt-5.2") ? body.model : "qwen/qwen3-coder:free";
+    const deepThinking = Boolean(body?.deepThinking);
 
     // Basic input validation
     if (messages.length === 0) {
@@ -81,55 +86,82 @@ Constraints:
 - category must be one of: greeting, ecommerce, support, marketing, general
 `;
 
-    const payload: any = {
-      model: "google/gemini-3-flash-preview",
-      stream: true,
-      messages: [
-        {
-          role: "system",
-          content:
-            systemPrompt +
-            `\n\nIntent flags: ${JSON.stringify(intent, null, 2)}\n(Validate against schema: ${JSON.stringify(intentSchema)})`,
+    const systemMessage = deepThinking
+      ? systemPrompt + `\n\nIntent flags: ${JSON.stringify(intent, null, 2)}\n\n**IMPORTANT**: Start every response with a numbered plan (max 5 steps), then proceed to execution.`
+      : systemPrompt + `\n\nIntent flags: ${JSON.stringify(intent, null, 2)}\n(Validate against schema: ${JSON.stringify(intentSchema)})`;
+
+    const fullMessages: ChatMessage[] = [{ role: "system", content: systemMessage }, ...messages];
+
+    if (model === "qwen/qwen3-coder:free") {
+      // Use OpenRouter for qwen
+      const openRouterKey = await createOpenRouterClient();
+      
+      const { readable, writable } = new TransformStream();
+      const writer = writable.getWriter();
+      const encoder = new TextEncoder();
+
+      // Start streaming in background
+      (async () => {
+        try {
+          await streamChatCompletion(openRouterKey, model, fullMessages, async (chunk) => {
+            const sseData = `data: ${JSON.stringify({ choices: [{ delta: { content: chunk } }] })}\n\n`;
+            await writer.write(encoder.encode(sseData));
+          });
+          await writer.write(encoder.encode("data: [DONE]\n\n"));
+        } catch (e) {
+          console.error("OpenRouter stream error:", e);
+        } finally {
+          await writer.close();
+        }
+      })();
+
+      return new Response(readable, {
+        headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+      });
+    } else {
+      // Use Lovable AI for Gemini/GPT
+      const payload: any = {
+        model,
+        stream: true,
+        messages: fullMessages,
+        temperature: 0.6,
+      };
+
+      const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
         },
-        ...messages,
-      ],
-      temperature: 0.6,
-    };
+        body: JSON.stringify(payload),
+      });
 
-    const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+      if (!aiResp.ok || !aiResp.body) {
+        if (aiResp.status === 429) {
+          return new Response(JSON.stringify({ error: "Rate limit exceeded. Try again shortly." }), {
+            status: 429,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        if (aiResp.status === 402) {
+          return new Response(JSON.stringify({ error: "AI credits required. Please add credits." }), {
+            status: 402,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
 
-    if (!aiResp.ok || !aiResp.body) {
-      if (aiResp.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded. Try again shortly." }), {
-          status: 429,
+        const t = await aiResp.text().catch(() => "");
+        console.error("ai-chat gateway error:", aiResp.status, t);
+        return new Response(JSON.stringify({ error: "AI gateway error" }), {
+          status: 500,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      if (aiResp.status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits required. Please add credits." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
 
-      const t = await aiResp.text().catch(() => "");
-      console.error("ai-chat gateway error:", aiResp.status, t);
-      return new Response(JSON.stringify({ error: "AI gateway error" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      return new Response(aiResp.body, {
+        headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
       });
     }
-
-    return new Response(aiResp.body, {
-      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
-    });
   } catch (e) {
     console.error("ai-chat error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {

@@ -13,6 +13,11 @@ import { streamAiChat } from "@/lib/streamAiChat";
 import { Bot, Sparkles, Wand2, Loader2, PlusCircle, Building2, Copy } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useNavigate } from "react-router-dom";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Brain } from "lucide-react";
+import type { ModelOption } from "@/lib/streamAiChat";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -103,6 +108,8 @@ export default function AiChat() {
     createBrand: true,
     createCopy: true,
   });
+  const [model, setModel] = useState<ModelOption>("qwen/qwen3-coder:free");
+  const [deepThinking, setDeepThinking] = useState(false);
   const [plan, setPlan] = useState<z.infer<typeof planSchema> | null>(null);
 
   useEffect(() => {
@@ -160,6 +167,8 @@ export default function AiChat() {
     await streamAiChat({
       messages: [...messages.filter((m) => m.role !== "assistant" || m.content.trim() !== ""), userMsg],
       intent,
+      model,
+      deepThinking,
       accessToken: sessionToken,
       onDelta: (delta) => upsertAssistant(delta),
       onDone: () => {
@@ -280,7 +289,31 @@ export default function AiChat() {
                     </Badge>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3 p-3 rounded-lg border border-border bg-muted/30">
+                    <div className="space-y-2">
+                      <Label className="text-xs text-muted-foreground">Model</Label>
+                      <Select value={model} onValueChange={(v) => setModel(v as ModelOption)}>
+                        <SelectTrigger className="h-8 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="qwen/qwen3-coder:free">Qwen 3 Coder (Free)</SelectItem>
+                          <SelectItem value="google/gemini-3-flash-preview">Gemini 3 Flash</SelectItem>
+                          <SelectItem value="google/gemini-2.5-pro">Gemini 2.5 Pro</SelectItem>
+                          <SelectItem value="openai/gpt-5.2">GPT-5.2</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs text-muted-foreground">Deep Thinking</Label>
+                      <div className="flex items-center gap-2 h-8 px-3 rounded-md border border-input bg-background">
+                        <Switch id="deepThinking" checked={deepThinking} onCheckedChange={setDeepThinking} />
+                        <Brain className="h-3 w-3 text-muted-foreground" />
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="max-h-[26rem] overflow-y-auto space-y-3 pr-2">
                     {messages.map((m, idx) => (
                       <div key={idx} className={m.role === "user" ? "flex justify-end" : "flex justify-start"}>

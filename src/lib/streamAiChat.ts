@@ -1,9 +1,13 @@
 type Message = { role: "user" | "assistant"; content: string };
 
+export type ModelOption = "qwen/qwen3-coder:free" | "google/gemini-3-flash-preview" | "google/gemini-2.5-pro" | "openai/gpt-5.2";
+
 export async function streamAiChat({
   messages,
   intent,
   accessToken,
+  model,
+  deepThinking,
   onDelta,
   onDone,
   onError,
@@ -11,6 +15,8 @@ export async function streamAiChat({
   messages: Message[];
   intent: { createBot: boolean; createTemplates: boolean; createBrand: boolean; createCopy: boolean };
   accessToken: string;
+  model?: ModelOption;
+  deepThinking?: boolean;
   onDelta: (deltaText: string) => void;
   onDone: () => void;
   onError: (error: Error) => void;
@@ -25,7 +31,7 @@ export async function streamAiChat({
         apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify({ messages, intent }),
+      body: JSON.stringify({ messages, intent, model, deepThinking }),
     });
 
     if (!response.ok || !response.body) {

@@ -1,14 +1,20 @@
 type Message = { role: "user" | "assistant"; content: string };
 
+export type ModelOption = "qwen/qwen3-coder:free" | "google/gemini-3-flash-preview" | "google/gemini-2.5-pro" | "openai/gpt-5.2";
+
 export async function streamChat({
   messages,
   botId,
+  model,
+  deepThinking,
   onDelta,
   onDone,
   onError,
 }: {
   messages: Message[];
   botId: string;
+  model?: ModelOption;
+  deepThinking?: boolean;
   onDelta: (deltaText: string) => void;
   onDone: () => void;
   onError: (error: Error) => void;
@@ -22,7 +28,7 @@ export async function streamChat({
         "Content-Type": "application/json",
         Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
       },
-      body: JSON.stringify({ messages, botId }),
+      body: JSON.stringify({ messages, botId, model, deepThinking }),
     });
 
     if (!response.ok || !response.body) {
