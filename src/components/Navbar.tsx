@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { Bot, Menu, ShoppingBag } from "lucide-react";
+import { Bot, Menu } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { CartDrawer } from "./CartDrawer";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,7 +14,6 @@ export const Navbar = () => {
     { label: "AI Chat", href: "/ai-chat" },
     { label: "Bots", href: "/bots" },
    { label: "Templates", href: "/templates" },
-    { label: "Store", href: "/storefront" },
   ];
 
   return (
@@ -37,12 +35,6 @@ export const Navbar = () => {
         </div>
 
         <div className="hidden md:flex items-center gap-4">
-          <Link to="/storefront">
-            <Button variant="ghost" size="icon">
-              <ShoppingBag className="w-5 h-5" />
-            </Button>
-          </Link>
-          <CartDrawer />
           <Button variant="ghost" asChild>
             <Link to="/auth">Sign In</Link>
           </Button>
