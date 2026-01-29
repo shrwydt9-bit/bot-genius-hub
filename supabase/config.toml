@@ -83,3 +83,12 @@ verify_jwt = false
 
 [functions.ai-chat]
 verify_jwt = false
+
+[functions.integrations-status]
+verify_jwt = false
+
+[functions.integrations-save]
+verify_jwt = false
+
+[functions.integrations-verify]
+verify_jwt = false

@@ -10,6 +10,7 @@ import Customize from "./pages/Customize";
 import Auth from "./pages/Auth";
 import AiChat from "./pages/AiChat";
 import Bots from "./pages/Bots";
+import Integrations from "./pages/Integrations";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const AppContent = () => {
       <Route path="/auth" element={<Auth />} />
       <Route path="/ai-chat" element={<AiChat />} />
       <Route path="/bots" element={<Bots />} />
+      <Route path="/integrations" element={<Integrations />} />
       <Route path="/platforms" element={<Platforms />} />
       <Route path="/customize" element={<Customize />} />
      <Route path="/templates" element={<ResponseTemplates />} />
