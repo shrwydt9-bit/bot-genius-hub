@@ -13,6 +13,7 @@ export const Navbar = () => {
     { label: "Platforms", href: "/#platforms" },
     { label: "AI Chat", href: "/ai-chat" },
     { label: "Bots", href: "/bots" },
+    { label: "Integrations", href: "/integrations" },
    { label: "Templates", href: "/templates" },
   ];
 
