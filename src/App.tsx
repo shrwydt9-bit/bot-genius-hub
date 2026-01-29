@@ -12,6 +12,8 @@ import AiChat from "./pages/AiChat";
 import Bots from "./pages/Bots";
 import Integrations from "./pages/Integrations";
 import NotFound from "./pages/NotFound";
+import Storefront from "./pages/Storefront";
+import ProductDetail from "./pages/ProductDetail";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +28,8 @@ const AppContent = () => {
       <Route path="/platforms" element={<Platforms />} />
       <Route path="/customize" element={<Customize />} />
      <Route path="/templates" element={<ResponseTemplates />} />
+      <Route path="/storefront" element={<Storefront />} />
+      <Route path="/product/:handle" element={<ProductDetail />} />
       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
       <Route path="*" element={<NotFound />} />
     </Routes>

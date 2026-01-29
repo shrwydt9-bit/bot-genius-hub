@@ -195,7 +195,7 @@ export default function Auth() {
                 Secure sign-in • Email verification
               </div>
               <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
-                Welcome to <span className="text-gradient">BotForge</span>
+                Welcome to <span className="text-gradient">Orion Atlas</span>
               </h1>
               <p className="text-muted-foreground text-lg max-w-prose">
                 Sign in to manage bots, templates, and analytics—optimized for every platform.
